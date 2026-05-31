@@ -2,6 +2,8 @@ using System.Runtime.InteropServices;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
@@ -46,36 +48,14 @@ public partial class MainWindow : Window
         }
     }
 
-    private void PreviousPageButton_Click(object? sender, RoutedEventArgs e)
-    {
-        var state = viewerSession.CurrentState;
-        if (state is null)
-        {
-            return;
-        }
-
-        ShowPage(state.Page.PageNumber - 1);
-    }
-
-    private void RenderPageButton_Click(object? sender, RoutedEventArgs e)
+    private void RenderDocumentButton_Click(object? sender, RoutedEventArgs e)
     {
         if (viewerSession.CurrentState is null)
         {
             return;
         }
 
-        TryRender(viewerSession.RenderCurrentPage);
-    }
-
-    private void NextPageButton_Click(object? sender, RoutedEventArgs e)
-    {
-        var state = viewerSession.CurrentState;
-        if (state is null)
-        {
-            return;
-        }
-
-        ShowPage(state.Page.PageNumber + 1);
+        TryRender(viewerSession.RenderDocument);
     }
 
     private void ZoomSlider_ValueChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
@@ -92,11 +72,6 @@ public partial class MainWindow : Window
     {
         SelectedPathText.Text = pdfPath;
         TryRender(() => viewerSession.Open(pdfPath, new PdfRenderSettings(ZoomSlider.Value)));
-    }
-
-    private void ShowPage(int pageNumber)
-    {
-        TryRender(() => viewerSession.ShowPage(pageNumber));
     }
 
     private void TryRender(Func<PdfViewerState> renderAction)
@@ -126,8 +101,8 @@ public partial class MainWindow : Window
     private void DisplayState(PdfViewerState state)
     {
         DocumentTitleText.Text = state.Document.FileName;
-        PageNumberText.Text = $"{state.Page.PageNumber} / {state.Document.PageCount}";
-        PageImage.Source = CreateBitmap(state.Page);
+        PageCountText.Text = $"{state.Document.PageCount} pages";
+        DisplayPages(state.Pages);
         ShowViewerView();
     }
 
@@ -135,7 +110,7 @@ public partial class MainWindow : Window
     {
         if (viewerSession.CurrentState is null)
         {
-            PageImage.Source = null;
+            PageStack.Children.Clear();
             ShowStartView();
         }
 
@@ -147,14 +122,12 @@ public partial class MainWindow : Window
         var state = viewerSession.CurrentState;
         var hasDocument = state is not null;
 
-        PreviousPageButton.IsEnabled = hasDocument && state!.Page.PageNumber > 1;
-        RenderPageButton.IsEnabled = hasDocument;
-        NextPageButton.IsEnabled = hasDocument && state!.Page.PageNumber < state.Document.PageCount;
+        RenderDocumentButton.IsEnabled = hasDocument;
         ZoomSlider.IsEnabled = hasDocument;
 
         if (!hasDocument)
         {
-            PageNumberText.Text = "0 / 0";
+            PageCountText.Text = "0 pages";
         }
     }
 
@@ -168,6 +141,52 @@ public partial class MainWindow : Window
     {
         StartView.IsVisible = false;
         ViewerView.IsVisible = true;
+    }
+
+    private void DisplayPages(IReadOnlyList<RenderedPdfPage> pages)
+    {
+        PageStack.Children.Clear();
+
+        foreach (var page in pages)
+        {
+            PageStack.Children.Add(CreatePageView(page));
+        }
+    }
+
+    private static Control CreatePageView(RenderedPdfPage page)
+    {
+        var label = new TextBlock
+        {
+            Text = $"Page {page.PageNumber}",
+            HorizontalAlignment = HorizontalAlignment.Center,
+            Foreground = Brushes.DimGray
+        };
+
+        var image = new Image
+        {
+            Source = CreateBitmap(page),
+            Stretch = Stretch.None
+        };
+
+        var frame = new Border
+        {
+            HorizontalAlignment = HorizontalAlignment.Center,
+            Background = Brushes.White,
+            BorderBrush = new SolidColorBrush(Color.Parse("#D7DCE2")),
+            BorderThickness = new Thickness(1),
+            Child = image
+        };
+
+        return new StackPanel
+        {
+            HorizontalAlignment = HorizontalAlignment.Center,
+            Spacing = 8,
+            Children =
+            {
+                label,
+                frame
+            }
+        };
     }
 
     private static Bitmap CreateBitmap(RenderedPdfPage page)

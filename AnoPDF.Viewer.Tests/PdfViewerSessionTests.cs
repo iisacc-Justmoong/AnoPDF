@@ -9,19 +9,19 @@ namespace AnoPDF.Viewer.Tests;
 public sealed class PdfViewerSessionTests
 {
     [Fact]
-    public void Open_loads_document_inspection_and_renders_first_page()
+    public void Open_loads_document_inspection_and_renders_every_page()
     {
-        using var pdf = ViewerTestPdfFile.Create("viewer.pdf", ViewerTestPdfFactory.CreateSinglePagePdf("Viewer"));
+        using var pdf = ViewerTestPdfFile.Create("viewer.pdf", ViewerTestPdfFactory.CreatePdf("First", "Second", "Third"));
         var renderer = new RecordingRenderer();
         var session = new PdfViewerSession(renderer);
 
         var state = session.Open(pdf.Path);
 
         Assert.Equal("viewer.pdf", state.Document.FileName);
-        Assert.Equal(1, state.Document.PageCount);
-        Assert.Equal(1, state.Page.PageNumber);
+        Assert.Equal(3, state.Document.PageCount);
+        Assert.Equal([1, 2, 3], state.Pages.Select(page => page.PageNumber));
         Assert.Equal(pdf.Path, renderer.LastPath);
-        Assert.Equal(1, renderer.LastPageNumber);
+        Assert.Equal([1, 2, 3], renderer.PageNumbers);
         Assert.Equal(state, session.CurrentState);
     }
 
@@ -40,63 +40,62 @@ public sealed class PdfViewerSessionTests
     }
 
     [Fact]
-    public void RenderCurrentPage_renders_the_visible_page_again()
+    public void RenderDocument_renders_every_page_again()
     {
-        using var pdf = ViewerTestPdfFile.Create("viewer.pdf", ViewerTestPdfFactory.CreateSinglePagePdf("Viewer"));
+        using var pdf = ViewerTestPdfFile.Create("viewer.pdf", ViewerTestPdfFactory.CreatePdf("First", "Second"));
         var renderer = new RecordingRenderer();
         var session = new PdfViewerSession(renderer);
         session.Open(pdf.Path);
 
-        var state = session.RenderCurrentPage();
+        var state = session.RenderDocument();
 
-        Assert.Equal(2, renderer.RenderCallCount);
-        Assert.Equal(1, state.Page.PageNumber);
-        Assert.Equal(1, renderer.LastPageNumber);
+        Assert.Equal(4, renderer.RenderCallCount);
+        Assert.Equal([1, 2], state.Pages.Select(page => page.PageNumber));
+        Assert.Equal([1, 2, 1, 2], renderer.PageNumbers);
     }
 
     [Fact]
-    public void ChangeZoom_rerenders_current_page_with_requested_scale()
+    public void ChangeZoom_rerenders_every_page_with_requested_scale()
     {
-        using var pdf = ViewerTestPdfFile.Create("viewer.pdf", ViewerTestPdfFactory.CreateSinglePagePdf("Viewer"));
+        using var pdf = ViewerTestPdfFile.Create("viewer.pdf", ViewerTestPdfFactory.CreatePdf("First", "Second"));
         var renderer = new RecordingRenderer();
         var session = new PdfViewerSession(renderer);
         session.Open(pdf.Path);
 
         session.ChangeZoom(1.5);
 
-        Assert.Equal(2, renderer.RenderCallCount);
-        Assert.Equal(1.5, renderer.LastScale);
+        Assert.Equal(4, renderer.RenderCallCount);
+        Assert.Equal([1, 2, 1, 2], renderer.PageNumbers);
+        Assert.All(renderer.Scales.Skip(2), scale => Assert.Equal(1.5, scale));
     }
 
     [Fact]
-    public void ShowPage_rejects_navigation_before_a_document_is_open()
+    public void RenderDocument_rejects_rendering_before_a_document_is_open()
     {
         var session = new PdfViewerSession(new RecordingRenderer());
 
-        var exception = Assert.Throws<InvalidOperationException>(() => session.ShowPage(1));
+        var exception = Assert.Throws<InvalidOperationException>(() => session.RenderDocument());
 
         Assert.Contains("open", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
-    public void ShowPage_rejects_page_outside_open_document_range()
+    public void ChangeZoom_rejects_zoom_before_a_document_is_open()
     {
-        using var pdf = ViewerTestPdfFile.Create("viewer.pdf", ViewerTestPdfFactory.CreateSinglePagePdf("Viewer"));
         var session = new PdfViewerSession(new RecordingRenderer());
-        session.Open(pdf.Path);
 
-        var exception = Assert.Throws<PdfRenderException>(() => session.ShowPage(2));
+        var exception = Assert.Throws<InvalidOperationException>(() => session.ChangeZoom(1.25));
 
-        Assert.Equal(PdfRenderFailure.PageOutOfRange, exception.Failure);
+        Assert.Contains("open", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     private sealed class RecordingRenderer : IPdfPageRenderer
     {
         public string? LastPath { get; private set; }
 
-        public int? LastPageNumber { get; private set; }
+        public List<int> PageNumbers { get; } = [];
 
-        public double? LastScale { get; private set; }
+        public List<double?> Scales { get; } = [];
 
         public int RenderCallCount { get; private set; }
 
@@ -106,8 +105,8 @@ public sealed class PdfViewerSessionTests
             PdfRenderSettings? settings = null)
         {
             LastPath = pdfPath;
-            LastPageNumber = pageNumber;
-            LastScale = settings?.Scale;
+            PageNumbers.Add(pageNumber);
+            Scales.Add(settings?.Scale);
             RenderCallCount++;
 
             return new RenderedPdfPage(
@@ -155,15 +154,36 @@ internal static class ViewerTestPdfFactory
 {
     public static byte[] CreateSinglePagePdf(string text)
     {
-        var content = $"BT\n/F1 12 Tf\n72 720 Td\n({EscapePdfString(text)}) Tj\nET";
+        return CreatePdf(text);
+    }
+
+    public static byte[] CreatePdf(params string[] pageTexts)
+    {
+        if (pageTexts.Length == 0)
+        {
+            throw new ArgumentException("At least one page is required.", nameof(pageTexts));
+        }
+
+        var pageIds = Enumerable
+            .Range(0, pageTexts.Length)
+            .Select(index => 4 + (index * 2))
+            .ToArray();
+        var kids = string.Join(" ", pageIds.Select(pageId => $"{pageId} 0 R"));
         var objects = new List<string>
         {
             "<< /Type /Catalog /Pages 2 0 R >>",
-            "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
-            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Rotate 0 /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>",
-            "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
-            $"<< /Length {Encoding.ASCII.GetByteCount(content)} >>\nstream\n{content}\nendstream"
+            $"<< /Type /Pages /Kids [{kids}] /Count {pageTexts.Length} >>",
+            "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>"
         };
+
+        for (var index = 0; index < pageTexts.Length; index++)
+        {
+            var contentId = pageIds[index] + 1;
+            var content = $"BT\n/F1 12 Tf\n72 720 Td\n({EscapePdfString(pageTexts[index])}) Tj\nET";
+
+            objects.Add($"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Rotate 0 /Resources << /Font << /F1 3 0 R >> >> /Contents {contentId} 0 R >>");
+            objects.Add($"<< /Length {Encoding.ASCII.GetByteCount(content)} >>\nstream\n{content}\nendstream");
+        }
 
         return WritePdf(objects);
     }

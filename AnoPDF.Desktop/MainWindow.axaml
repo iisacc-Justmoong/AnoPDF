@@ -69,43 +69,24 @@
                         <StackPanel Grid.Column="2"
                                     Orientation="Horizontal"
                                     VerticalAlignment="Center">
-                            <Button x:Name="RenderPageButton"
-                                    Width="96"
-                                    Height="34"
-                                    Margin="0,0,12,0"
-                                    HorizontalContentAlignment="Center"
-                                    Click="RenderPageButton_Click"
-                                    Content="Render Page"
-                                    ToolTip.Tip="현재 페이지 다시 렌더링" />
-
-                            <Button x:Name="PreviousPageButton"
-                                    Width="34"
-                                    Height="34"
-                                    HorizontalContentAlignment="Center"
-                                    Click="PreviousPageButton_Click"
-                                    Content="‹"
-                                    FontSize="20"
-                                    ToolTip.Tip="이전 페이지" />
-
-                            <TextBlock x:Name="PageNumberText"
-                                       Width="76"
+                            <TextBlock x:Name="PageCountText"
+                                       Width="82"
                                        VerticalAlignment="Center"
                                        TextAlignment="Center"
                                        Foreground="#374151"
-                                       Text="0 / 0" />
+                                       Text="0 pages" />
 
-                            <Button x:Name="NextPageButton"
-                                    Width="34"
+                            <Button x:Name="RenderDocumentButton"
+                                    Width="126"
                                     Height="34"
+                                    Margin="0,0,12,0"
                                     HorizontalContentAlignment="Center"
-                                    Click="NextPageButton_Click"
-                                    Content="›"
-                                    FontSize="20"
-                                    ToolTip.Tip="다음 페이지" />
+                                    Click="RenderDocumentButton_Click"
+                                    Content="Render Document"
+                                    ToolTip.Tip="문서 전체 다시 렌더링" />
 
                             <Slider x:Name="ZoomSlider"
                                     Width="130"
-                                    Margin="16,0,0,0"
                                     Minimum="0.5"
                                     Maximum="2.5"
                                     Value="1"
@@ -120,20 +101,12 @@
                 <ScrollViewer HorizontalScrollBarVisibility="Auto"
                               VerticalScrollBarVisibility="Auto">
                     <Border Padding="24">
-                        <Grid x:Name="DocumentHost"
-                              MinWidth="320"
-                              MinHeight="320">
-                            <Border x:Name="PageFrame"
+                        <StackPanel x:Name="PageStack"
+                                    MinWidth="320"
+                                    MinHeight="320"
                                     HorizontalAlignment="Center"
-                                    VerticalAlignment="Top"
-                                    Background="#FFFFFF"
-                                    BorderBrush="#D7DCE2"
-                                    BorderThickness="1"
-                                    Padding="0">
-                                <Image x:Name="PageImage"
-                                       Stretch="None" />
-                            </Border>
-                        </Grid>
+                                    Orientation="Vertical"
+                                    Spacing="24" />
                     </Border>
                 </ScrollViewer>
             </DockPanel>

@@ -28,18 +28,28 @@ public sealed class DesktopProjectConfigurationTests
         Assert.DoesNotContain("Microsoft.WindowsDesktop.App", packageNames);
     }
 
+    [Fact]
+    public void Desktop_window_presents_pdf_pages_as_a_scrollable_document_stack()
+    {
+        var markup = File.ReadAllText(GetRepositoryPath("AnoPDF.Desktop", "MainWindow.axaml"));
+
+        Assert.Contains("ScrollViewer", markup, StringComparison.Ordinal);
+        Assert.Contains("PageStack", markup, StringComparison.Ordinal);
+        Assert.DoesNotContain("PreviousPageButton", markup, StringComparison.Ordinal);
+        Assert.DoesNotContain("NextPageButton", markup, StringComparison.Ordinal);
+    }
+
     private static XDocument LoadDesktopProject()
     {
-        var projectPath = Path.GetFullPath(Path.Combine(
-            AppContext.BaseDirectory,
-            "..",
-            "..",
-            "..",
-            "..",
-            "AnoPDF.Desktop",
-            "AnoPDF.Desktop.csproj"));
+        var projectPath = GetRepositoryPath("AnoPDF.Desktop", "AnoPDF.Desktop.csproj");
 
         return XDocument.Load(projectPath);
+    }
+
+    private static string GetRepositoryPath(params string[] paths)
+    {
+        return Path.GetFullPath(Path.Combine(
+            [AppContext.BaseDirectory, "..", "..", "..", "..", .. paths]));
     }
 
     private static string? GetProperty(XContainer project, string propertyName)
