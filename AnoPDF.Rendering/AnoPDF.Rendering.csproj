@@ -8,8 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="PDFium.WindowsV2" Version="1.1.4" />
-    <PackageReference Include="PDFiumSharpV2" Version="1.1.4" />
+    <PackageReference Include="Docnet.Core" Version="2.6.0" />
   </ItemGroup>
 
 </Project>

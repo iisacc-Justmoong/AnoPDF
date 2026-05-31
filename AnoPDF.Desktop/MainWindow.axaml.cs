@@ -1,8 +1,10 @@
-using System.Windows;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using Microsoft.Win32;
+using System.Runtime.InteropServices;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Interactivity;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
+using Avalonia.Platform.Storage;
 using PdfInspector;
 using PdfInspector.Rendering;
 using PdfInspector.Viewer;
@@ -11,6 +13,12 @@ namespace AnoPDF.Desktop;
 
 public partial class MainWindow : Window
 {
+    private static readonly FilePickerFileType PdfFileType = new("PDF files")
+    {
+        Patterns = ["*.pdf"],
+        MimeTypes = ["application/pdf"]
+    };
+
     private readonly PdfViewerSession viewerSession = new(
         new PdfInspectionService(),
         new PdfiumPageRenderer(),
@@ -23,21 +31,22 @@ public partial class MainWindow : Window
         UpdateControls();
     }
 
-    private void OpenButton_Click(object sender, RoutedEventArgs e)
+    private async void OpenButton_Click(object? sender, RoutedEventArgs e)
     {
-        var dialog = new OpenFileDialog
+        var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
-            Filter = "PDF files (*.pdf)|*.pdf|All files (*.*)|*.*",
-            Title = "PDF 열기"
-        };
+            Title = "PDF 열기",
+            AllowMultiple = false,
+            FileTypeFilter = [PdfFileType, FilePickerFileTypes.All]
+        });
 
-        if (dialog.ShowDialog(this) == true)
+        if (files.Count > 0)
         {
-            OpenDocument(dialog.FileName);
+            OpenDocument(files[0].Path.LocalPath);
         }
     }
 
-    private void PreviousPageButton_Click(object sender, RoutedEventArgs e)
+    private void PreviousPageButton_Click(object? sender, RoutedEventArgs e)
     {
         var state = viewerSession.CurrentState;
         if (state is null)
@@ -48,7 +57,7 @@ public partial class MainWindow : Window
         ShowPage(state.Page.PageNumber - 1);
     }
 
-    private void RenderPageButton_Click(object sender, RoutedEventArgs e)
+    private void RenderPageButton_Click(object? sender, RoutedEventArgs e)
     {
         if (viewerSession.CurrentState is null)
         {
@@ -58,7 +67,7 @@ public partial class MainWindow : Window
         TryRender(viewerSession.RenderCurrentPage);
     }
 
-    private void NextPageButton_Click(object sender, RoutedEventArgs e)
+    private void NextPageButton_Click(object? sender, RoutedEventArgs e)
     {
         var state = viewerSession.CurrentState;
         if (state is null)
@@ -69,7 +78,7 @@ public partial class MainWindow : Window
         ShowPage(state.Page.PageNumber + 1);
     }
 
-    private void ZoomSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    private void ZoomSlider_ValueChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
         if (!IsLoaded || viewerSession.CurrentState is null)
         {
@@ -94,7 +103,6 @@ public partial class MainWindow : Window
     {
         try
         {
-            Mouse.OverrideCursor = Cursors.Wait;
             StatusText.Text = "렌더링 중";
 
             var state = renderAction();
@@ -111,7 +119,6 @@ public partial class MainWindow : Window
         }
         finally
         {
-            Mouse.OverrideCursor = null;
             UpdateControls();
         }
     }
@@ -120,7 +127,7 @@ public partial class MainWindow : Window
     {
         DocumentTitleText.Text = state.Document.FileName;
         PageNumberText.Text = $"{state.Page.PageNumber} / {state.Document.PageCount}";
-        PageImage.Source = CreateBitmapSource(state.Page);
+        PageImage.Source = CreateBitmap(state.Page);
         ShowViewerView();
     }
 
@@ -133,7 +140,6 @@ public partial class MainWindow : Window
         }
 
         StatusText.Text = message;
-        MessageBox.Show(this, message, "AnoPDF", MessageBoxButton.OK, MessageBoxImage.Warning);
     }
 
     private void UpdateControls()
@@ -154,29 +160,26 @@ public partial class MainWindow : Window
 
     private void ShowStartView()
     {
-        StartView.Visibility = Visibility.Visible;
-        ViewerView.Visibility = Visibility.Collapsed;
+        StartView.IsVisible = true;
+        ViewerView.IsVisible = false;
     }
 
     private void ShowViewerView()
     {
-        StartView.Visibility = Visibility.Collapsed;
-        ViewerView.Visibility = Visibility.Visible;
+        StartView.IsVisible = false;
+        ViewerView.IsVisible = true;
     }
 
-    private static BitmapSource CreateBitmapSource(RenderedPdfPage page)
+    private static Bitmap CreateBitmap(RenderedPdfPage page)
     {
-        var source = BitmapSource.Create(
-            page.PixelWidth,
-            page.PixelHeight,
-            page.Dpi,
-            page.Dpi,
-            PixelFormats.Bgra32,
-            palette: null,
-            page.Pixels,
-            page.Stride);
+        var bitmap = new WriteableBitmap(
+            new PixelSize(page.PixelWidth, page.PixelHeight),
+            new Avalonia.Vector(page.Dpi, page.Dpi),
+            PixelFormat.Bgra8888,
+            AlphaFormat.Unpremul);
 
-        source.Freeze();
-        return source;
+        using var framebuffer = bitmap.Lock();
+        Marshal.Copy(page.Pixels, 0, framebuffer.Address, page.Pixels.Length);
+        return bitmap;
     }
 }

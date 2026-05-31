@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnoPDF.Viewer.Tests", "AnoP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnoPDF.Desktop", "AnoPDF.Desktop\AnoPDF.Desktop.csproj", "{59963D2F-62BC-4C8D-9128-36EEAC63D886}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnoPDF.Desktop.Tests", "AnoPDF.Desktop.Tests\AnoPDF.Desktop.Tests.csproj", "{D2074ADD-EF72-47D4-88E5-E72790173500}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -108,6 +110,18 @@ Global
 		{59963D2F-62BC-4C8D-9128-36EEAC63D886}.Release|x64.Build.0 = Release|Any CPU
 		{59963D2F-62BC-4C8D-9128-36EEAC63D886}.Release|x86.ActiveCfg = Release|Any CPU
 		{59963D2F-62BC-4C8D-9128-36EEAC63D886}.Release|x86.Build.0 = Release|Any CPU
+		{D2074ADD-EF72-47D4-88E5-E72790173500}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2074ADD-EF72-47D4-88E5-E72790173500}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2074ADD-EF72-47D4-88E5-E72790173500}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D2074ADD-EF72-47D4-88E5-E72790173500}.Debug|x64.Build.0 = Debug|Any CPU
+		{D2074ADD-EF72-47D4-88E5-E72790173500}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D2074ADD-EF72-47D4-88E5-E72790173500}.Debug|x86.Build.0 = Debug|Any CPU
+		{D2074ADD-EF72-47D4-88E5-E72790173500}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2074ADD-EF72-47D4-88E5-E72790173500}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2074ADD-EF72-47D4-88E5-E72790173500}.Release|x64.ActiveCfg = Release|Any CPU
+		{D2074ADD-EF72-47D4-88E5-E72790173500}.Release|x64.Build.0 = Release|Any CPU
+		{D2074ADD-EF72-47D4-88E5-E72790173500}.Release|x86.ActiveCfg = Release|Any CPU
+		{D2074ADD-EF72-47D4-88E5-E72790173500}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

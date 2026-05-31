@@ -1,7 +1,6 @@
-using System.Runtime.InteropServices;
-using PDFiumSharp;
-using PDFiumSharp.Enums;
-using PDFiumSharp.Types;
+using Docnet.Core;
+using Docnet.Core.Exceptions;
+using Docnet.Core.Models;
 
 namespace PdfInspector.Rendering;
 
@@ -17,35 +16,27 @@ public sealed class PdfiumPageRenderer : IPdfPageRenderer
 
         try
         {
-            EnsurePdfiumIsAvailable();
+            using var document = DocLib.Instance.GetDocReader(
+                fileInfo.FullName,
+                new PageDimensions(renderSettings.Dpi / 72.0 * renderSettings.Scale));
 
-            using var document = new PdfDocument(fileInfo.FullName);
-            if (pageNumber > document.Pages.Count)
+            if (pageNumber > document.GetPageCount())
             {
                 throw new PdfRenderException(
                     PdfRenderFailure.PageOutOfRange,
-                    $"PDF page {pageNumber} is outside the document page range 1..{document.Pages.Count}.");
+                    $"PDF page {pageNumber} is outside the document page range 1..{document.GetPageCount()}.");
             }
 
-            using var page = document.Pages[pageNumber - 1];
-            var pixelSize = PdfRenderGeometry.CalculatePixelSize(page.Width, page.Height, renderSettings);
-            using var bitmap = new PDFiumBitmap(pixelSize.Width, pixelSize.Height, hasAlpha: true);
-
-            bitmap.Fill(new FPDF_COLOR(r: 255, g: 255, b: 255, a: 255));
-            page.Render(
-                bitmap,
-                (0, 0, pixelSize.Width, pixelSize.Height),
-                PageOrientations.Normal,
-                RenderingFlags.Annotations | RenderingFlags.LcdText);
-
-            var pixels = new byte[checked(bitmap.Stride * bitmap.Height)];
-            Marshal.Copy(bitmap.Scan0, pixels, 0, pixels.Length);
+            using var page = document.GetPageReader(pageNumber - 1);
+            var width = page.GetPageWidth();
+            var height = page.GetPageHeight();
+            var pixels = page.GetImage(RenderFlags.RenderAnnotations | RenderFlags.OptimizeTextForLcd);
 
             return new RenderedPdfPage(
                 pageNumber,
-                bitmap.Width,
-                bitmap.Height,
-                bitmap.Stride,
+                width,
+                height,
+                checked(width * 4),
                 renderSettings.Dpi,
                 pixels);
         }
@@ -65,7 +56,14 @@ public sealed class PdfiumPageRenderer : IPdfPageRenderer
         {
             throw CreateUnavailableException(exception);
         }
-        catch (PDFiumException exception)
+        catch (DocnetLoadDocumentException exception)
+        {
+            throw new PdfRenderException(
+                PdfRenderFailure.RenderFailed,
+                $"PDFium failed to open the document for rendering: {fileInfo.FullName}",
+                exception);
+        }
+        catch (DocnetException exception)
         {
             throw new PdfRenderException(
                 PdfRenderFailure.RenderFailed,
@@ -99,18 +97,6 @@ public sealed class PdfiumPageRenderer : IPdfPageRenderer
         }
 
         return fileInfo;
-    }
-
-    private static void EnsurePdfiumIsAvailable()
-    {
-        if (PDFium.IsAvailable)
-        {
-            return;
-        }
-
-        throw new PdfRenderException(
-            PdfRenderFailure.PdfiumUnavailable,
-            "PDFium native library is not available. Install or copy the matching PDFium native binaries.");
     }
 
     private static PdfRenderException CreateUnavailableException(Exception exception)
