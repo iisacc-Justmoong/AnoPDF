@@ -39,6 +39,32 @@ public sealed class DesktopProjectConfigurationTests
         Assert.DoesNotContain("NextPageButton", markup, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void Desktop_window_opens_pdf_dialog_from_the_attached_top_level()
+    {
+        var code = File.ReadAllText(GetRepositoryPath("AnoPDF.Desktop", "MainWindow.axaml.cs"));
+
+        Assert.Contains("TopLevel.GetTopLevel(this)", code, StringComparison.Ordinal);
+        Assert.Contains("storageProvider.CanOpen", code, StringComparison.Ordinal);
+        Assert.Contains("OpenFilePickerAsync", code, StringComparison.Ordinal);
+        Assert.Contains("TryGetLocalPath()", code, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Desktop_start_view_has_a_direct_file_dialog_button_below_the_path_text()
+    {
+        var markup = File.ReadAllText(GetRepositoryPath("AnoPDF.Desktop", "MainWindow.axaml"));
+        var pathTextIndex = markup.IndexOf("SelectedPathText", StringComparison.Ordinal);
+        var directButtonIndex = markup.IndexOf("DirectFileDialogButton", StringComparison.Ordinal);
+
+        Assert.True(pathTextIndex >= 0);
+        Assert.True(directButtonIndex > pathTextIndex);
+        Assert.Contains("Content=\"Open\"", markup, StringComparison.Ordinal);
+        Assert.Contains("Click=\"OpenButton_Click\"", markup, StringComparison.Ordinal);
+        Assert.DoesNotContain("선택된 파일 없음", markup, StringComparison.Ordinal);
+        Assert.DoesNotContain("파일 다이얼로그 열기", markup, StringComparison.Ordinal);
+    }
+
     private static XDocument LoadDesktopProject()
     {
         var projectPath = GetRepositoryPath("AnoPDF.Desktop", "AnoPDF.Desktop.csproj");

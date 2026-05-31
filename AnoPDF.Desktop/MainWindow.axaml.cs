@@ -35,17 +35,70 @@ public partial class MainWindow : Window
 
     private async void OpenButton_Click(object? sender, RoutedEventArgs e)
     {
-        var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        await OpenPdfFromDialogAsync();
+    }
+
+    private async Task OpenPdfFromDialogAsync()
+    {
+        SetOpenButtonsEnabled(false);
+
+        try
         {
-            Title = "PDF 열기",
+            StatusText.Text = "Choosing file";
+
+            var pdfPath = await PickPdfPathAsync();
+            if (pdfPath is null)
+            {
+                StatusText.Text = "Ready";
+                return;
+            }
+
+            OpenDocument(pdfPath);
+        }
+        catch (Exception exception)
+        {
+            ShowFailure($"Could not open the file dialog: {exception.Message}");
+        }
+        finally
+        {
+            SetOpenButtonsEnabled(true);
+            UpdateControls();
+        }
+    }
+
+    private async Task<string?> PickPdfPathAsync()
+    {
+        var topLevel = TopLevel.GetTopLevel(this);
+        if (topLevel is null)
+        {
+            throw new InvalidOperationException("The current window is not attached to the file dialog.");
+        }
+
+        var storageProvider = topLevel.StorageProvider;
+        if (!storageProvider.CanOpen)
+        {
+            throw new InvalidOperationException("The current runtime does not support opening files.");
+        }
+
+        var files = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Open PDF",
             AllowMultiple = false,
             FileTypeFilter = [PdfFileType, FilePickerFileTypes.All]
         });
 
-        if (files.Count > 0)
+        if (files.Count == 0)
         {
-            OpenDocument(files[0].Path.LocalPath);
+            return null;
         }
+
+        var localPath = files[0].TryGetLocalPath();
+        if (string.IsNullOrWhiteSpace(localPath))
+        {
+            throw new InvalidOperationException("The selected PDF does not expose a local file path.");
+        }
+
+        return localPath;
     }
 
     private void RenderDocumentButton_Click(object? sender, RoutedEventArgs e)
@@ -78,11 +131,11 @@ public partial class MainWindow : Window
     {
         try
         {
-            StatusText.Text = "렌더링 중";
+            StatusText.Text = "Rendering";
 
             var state = renderAction();
             DisplayState(state);
-            StatusText.Text = "준비됨";
+            StatusText.Text = "Ready";
         }
         catch (PdfInspectionException exception)
         {
@@ -129,6 +182,12 @@ public partial class MainWindow : Window
         {
             PageCountText.Text = "0 pages";
         }
+    }
+
+    private void SetOpenButtonsEnabled(bool isEnabled)
+    {
+        DirectFileDialogButton.IsEnabled = isEnabled;
+        OpenButton.IsEnabled = isEnabled;
     }
 
     private void ShowStartView()

@@ -22,9 +22,12 @@ AnoPDF는 PDF 위에 그리는 편집기로 가기 전, PDF를 먼저 읽고 설
 현재 GUI Viewer의 최소 기능은 다음과 같다.
 
 - Open File: 초기 뷰에서 PDF 파일을 선택하고 문서 정보를 읽는다.
+- Direct File Dialog: 초기 뷰의 선택 경로 아래 `Open` 버튼으로 파일 선택 창을 직접 연다.
 - Render Document: 문서 전체 페이지를 PDFium으로 다시 렌더링한다.
 - Zoom: 확대율을 바꾸고 문서 전체 페이지를 다시 렌더링한다.
 - Document Scroll: 전체 페이지를 세로로 쌓아 스크롤로 이동한다.
+
+파일 선택기는 Avalonia 창에 연결된 `TopLevel.StorageProvider`에서 열고, 파일 열기를 지원하지 않는 실행 환경에서는 상태 표시줄에 오류를 표시한다.
 
 `Microsoft.WindowsDesktop.App`은 Windows 전용 런타임이라 macOS에서 실행할 수 없다. 따라서 GUI 프로젝트는 `net9.0` Avalonia 앱으로 구성해 macOS arm64에서도 데스크탑 실행이 가능하게 한다.
 
@@ -61,7 +64,7 @@ dotnet run --project AnoPDF.Desktop/AnoPDF.Desktop.csproj
 
 ## 검증
 
-테스트는 임시 최소 PDF 파일을 생성해 입력 검증, 메타데이터, 페이지 크기, 텍스트 샘플 제한, 텍스트 없는 페이지, JSON 저장, 렌더링 지오메트리, PDFium 렌더링, 파일 열기 세션, 전체 페이지 렌더링, 데스크탑 프로젝트 런타임 구성과 스크롤형 문서 뷰 구성을 확인한다.
+테스트는 임시 최소 PDF 파일을 생성해 입력 검증, 메타데이터, 페이지 크기, 텍스트 샘플 제한, 텍스트 없는 페이지, JSON 저장, 렌더링 지오메트리, PDFium 렌더링, 파일 열기 세션, 전체 페이지 렌더링, 데스크탑 프로젝트 런타임 구성, 파일 선택기 연결 방식과 스크롤형 문서 뷰 구성을 확인한다.
 
 ```bash
 dotnet test AnoPDF.sln
