@@ -19,6 +19,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        ShowStartView();
         UpdateControls();
     }
 
@@ -80,6 +81,7 @@ public partial class MainWindow : Window
 
     private void OpenDocument(string pdfPath)
     {
+        SelectedPathText.Text = pdfPath;
         TryRender(() => viewerSession.Open(pdfPath, new PdfRenderSettings(ZoomSlider.Value)));
     }
 
@@ -119,13 +121,17 @@ public partial class MainWindow : Window
         DocumentTitleText.Text = state.Document.FileName;
         PageNumberText.Text = $"{state.Page.PageNumber} / {state.Document.PageCount}";
         PageImage.Source = CreateBitmapSource(state.Page);
-        EmptyStateText.Visibility = Visibility.Collapsed;
+        ShowViewerView();
     }
 
     private void ShowFailure(string message)
     {
-        PageImage.Source = null;
-        EmptyStateText.Visibility = Visibility.Visible;
+        if (viewerSession.CurrentState is null)
+        {
+            PageImage.Source = null;
+            ShowStartView();
+        }
+
         StatusText.Text = message;
         MessageBox.Show(this, message, "AnoPDF", MessageBoxButton.OK, MessageBoxImage.Warning);
     }
@@ -143,8 +149,19 @@ public partial class MainWindow : Window
         if (!hasDocument)
         {
             PageNumberText.Text = "0 / 0";
-            EmptyStateText.Visibility = Visibility.Visible;
         }
+    }
+
+    private void ShowStartView()
+    {
+        StartView.Visibility = Visibility.Visible;
+        ViewerView.Visibility = Visibility.Collapsed;
+    }
+
+    private void ShowViewerView()
+    {
+        StartView.Visibility = Visibility.Collapsed;
+        ViewerView.Visibility = Visibility.Visible;
     }
 
     private static BitmapSource CreateBitmapSource(RenderedPdfPage page)

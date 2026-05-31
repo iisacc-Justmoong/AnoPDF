@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text;
+using PdfInspector;
 using PdfInspector.Rendering;
 using PdfInspector.Viewer;
 
@@ -22,6 +23,20 @@ public sealed class PdfViewerSessionTests
         Assert.Equal(pdf.Path, renderer.LastPath);
         Assert.Equal(1, renderer.LastPageNumber);
         Assert.Equal(state, session.CurrentState);
+    }
+
+    [Fact]
+    public void Open_rejects_missing_file_without_creating_viewer_state()
+    {
+        var missingPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.pdf");
+        var renderer = new RecordingRenderer();
+        var session = new PdfViewerSession(renderer);
+
+        var exception = Assert.Throws<PdfInspectionException>(() => session.Open(missingPath));
+
+        Assert.Equal(PdfInspectionFailure.FileNotFound, exception.Failure);
+        Assert.Null(session.CurrentState);
+        Assert.Equal(0, renderer.RenderCallCount);
     }
 
     [Fact]

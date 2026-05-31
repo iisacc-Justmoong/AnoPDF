@@ -16,11 +16,12 @@ AnoPDF는 PDF 위에 그리는 편집기로 가기 전, PDF를 먼저 읽고 설
 
 - `AnoPDF.Rendering`은 PDFiumSharpV2와 PDFium Windows native package를 사용해 PDF 페이지를 BGRA 픽셀 버퍼로 렌더링한다.
 - `AnoPDF.Viewer`는 파일 열기, 문서 검사, 첫 페이지 렌더링, 페이지 이동, 확대율 변경을 UI와 분리한 세션 모델로 제공한다.
-- `AnoPDF.Desktop`은 WPF 앱이며, `OpenFileDialog`로 PDF를 열고 렌더링된 페이지를 `Image`에 표시한다.
+- `AnoPDF.Desktop`은 WPF 앱이며, 초기 뷰에서 `OpenFileDialog`로 PDF 경로를 받고 올바르게 열린 경우에만 PDF 표시 뷰로 전환한다.
+- 이후 뷰는 렌더링된 페이지를 `Image`에 표시하고 페이지 이동, 재렌더링, 확대율 변경을 제공한다.
 
 현재 GUI Viewer의 최소 기능은 다음과 같다.
 
-- Open File: PDF 파일을 선택하고 문서 정보를 읽는다.
+- Open File: 초기 뷰에서 PDF 파일을 선택하고 문서 정보를 읽는다.
 - Render Page: 현재 페이지를 PDFium으로 다시 렌더링한다.
 - Zoom: 확대율을 바꾸고 현재 페이지를 다시 렌더링한다.
 - Page Navigation: 이전/다음 페이지로 이동한다.
