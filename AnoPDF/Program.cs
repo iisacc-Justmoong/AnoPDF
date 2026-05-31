@@ -1,3 +1,3 @@
-﻿// See https://aka.ms/new-console-template for more information
+using PdfInspector;
 
-Console.WriteLine("Hello, World!");
+return PdfInspectorCli.Run(args, Console.Out, Console.Error);
