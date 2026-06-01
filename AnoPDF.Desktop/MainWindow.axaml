@@ -36,12 +36,14 @@
                         Width="64"
                         Height="32"
                         HorizontalContentAlignment="Center"
+                        Click="PanToolButton_Click"
                         Content="Pan"
                         ToolTip.Tip="Pan document" />
                 <Button x:Name="PenToolButton"
                         Width="64"
                         Height="32"
                         HorizontalContentAlignment="Center"
+                        Click="PenToolButton_Click"
                         Content="Pen"
                         ToolTip.Tip="Draw with pen" />
                 <Button x:Name="HighlighterToolButton"
@@ -85,6 +87,7 @@
                         Value="3"
                         TickFrequency="1"
                         IsSnapToTickEnabled="True"
+                        ValueChanged="StrokeWidthSlider_ValueChanged"
                         ToolTip.Tip="Stroke width" />
             </StackPanel>
         </Border>

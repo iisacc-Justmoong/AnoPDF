@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Media;
 
 namespace AnoPDF.Desktop;
@@ -7,6 +8,26 @@ namespace AnoPDF.Desktop;
 public sealed class HslRgbTriangleColorPicker : Control
 {
     private const int HueSegmentCount = 24;
+    private bool isSelecting;
+    private Color selectedColor = Color.Parse("#2563EB");
+
+    public event EventHandler<Color>? SelectedColorChanged;
+
+    public Color SelectedColor
+    {
+        get => selectedColor;
+        private set
+        {
+            if (selectedColor == value)
+            {
+                return;
+            }
+
+            selectedColor = value;
+            SelectedColorChanged?.Invoke(this, value);
+            InvalidateVisual();
+        }
+    }
 
     public override void Render(DrawingContext context)
     {
@@ -23,12 +44,70 @@ public sealed class HslRgbTriangleColorPicker : Control
         var innerRadius = outerRadius * 0.66;
 
         DrawHueWheel(context, center, innerRadius, outerRadius);
-        DrawRgbTriangle(context, center, innerRadius * 0.84);
+        DrawRgbTriangle(context, center, innerRadius * 0.84, SelectedColor);
     }
 
     protected override Size MeasureOverride(Size availableSize)
     {
         return new Size(96, 72);
+    }
+
+    protected override void OnPointerPressed(PointerPressedEventArgs e)
+    {
+        base.OnPointerPressed(e);
+
+        var pointer = e.GetCurrentPoint(this);
+        if (!pointer.Properties.IsLeftButtonPressed)
+        {
+            return;
+        }
+
+        isSelecting = TrySelectColor(pointer.Position);
+        if (isSelecting)
+        {
+            e.Pointer.Capture(this);
+            e.Handled = true;
+        }
+    }
+
+    protected override void OnPointerMoved(PointerEventArgs e)
+    {
+        base.OnPointerMoved(e);
+
+        if (!isSelecting)
+        {
+            return;
+        }
+
+        var pointer = e.GetCurrentPoint(this);
+        if (!pointer.Properties.IsLeftButtonPressed)
+        {
+            EndSelection(e.Pointer);
+            return;
+        }
+
+        TrySelectColor(pointer.Position);
+        e.Handled = true;
+    }
+
+    protected override void OnPointerReleased(PointerReleasedEventArgs e)
+    {
+        base.OnPointerReleased(e);
+
+        if (!isSelecting)
+        {
+            return;
+        }
+
+        TrySelectColor(e.GetPosition(this));
+        EndSelection(e.Pointer);
+        e.Handled = true;
+    }
+
+    private void EndSelection(IPointer pointer)
+    {
+        isSelecting = false;
+        pointer.Capture(null);
     }
 
     private static void DrawHueWheel(
@@ -58,7 +137,7 @@ public sealed class HslRgbTriangleColorPicker : Control
             outerRadius);
     }
 
-    private static void DrawRgbTriangle(DrawingContext context, Point center, double radius)
+    private static void DrawRgbTriangle(DrawingContext context, Point center, double radius, Color selectedColor)
     {
         var top = PointOnCircle(center, radius, -90);
         var left = PointOnCircle(center, radius, 150);
@@ -74,11 +153,38 @@ public sealed class HslRgbTriangleColorPicker : Control
             new Pen(new SolidColorBrush(Color.Parse("#111827")), 1),
             CreateTriangleGeometry(top, left, right));
         context.DrawEllipse(
-            Brushes.White,
+            new SolidColorBrush(selectedColor),
             new Pen(new SolidColorBrush(Color.Parse("#111827")), 1),
             center,
             3,
             3);
+    }
+
+    private bool TrySelectColor(Point position)
+    {
+        if (Bounds.Width <= 0 || Bounds.Height <= 0)
+        {
+            return false;
+        }
+
+        var size = Math.Min(Bounds.Width, Bounds.Height);
+        var center = new Point(Bounds.Width / 2, Bounds.Height / 2);
+        var outerRadius = size * 0.46;
+        var deltaX = position.X - center.X;
+        var deltaY = position.Y - center.Y;
+        var distance = Math.Sqrt((deltaX * deltaX) + (deltaY * deltaY));
+
+        if (distance > outerRadius)
+        {
+            return false;
+        }
+
+        var angle = Math.Atan2(deltaY, deltaX);
+        var hue = ((angle * 180.0 / Math.PI) + 360.0) % 360.0 / 360.0;
+        var saturation = Math.Clamp(distance / outerRadius, 0, 1);
+
+        SelectedColor = FromHsl(hue, saturation, lightness: 0.5);
+        return true;
     }
 
     private static StreamGeometry CreateRingSegmentGeometry(

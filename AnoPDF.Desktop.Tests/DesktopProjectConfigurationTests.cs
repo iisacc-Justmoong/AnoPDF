@@ -72,7 +72,9 @@ public sealed class DesktopProjectConfigurationTests
 
         Assert.Contains("DrawingToolbar", markup, StringComparison.Ordinal);
         Assert.Contains("PanToolButton", markup, StringComparison.Ordinal);
+        Assert.Contains("Click=\"PanToolButton_Click\"", markup, StringComparison.Ordinal);
         Assert.Contains("PenToolButton", markup, StringComparison.Ordinal);
+        Assert.Contains("Click=\"PenToolButton_Click\"", markup, StringComparison.Ordinal);
         Assert.Contains("HighlighterToolButton", markup, StringComparison.Ordinal);
         Assert.Contains("EraserToolButton", markup, StringComparison.Ordinal);
         Assert.Contains("HslRgbTriangleColorPicker", markup, StringComparison.Ordinal);
@@ -80,6 +82,18 @@ public sealed class DesktopProjectConfigurationTests
         Assert.DoesNotContain("DrawingColorRedButton", markup, StringComparison.Ordinal);
         Assert.DoesNotContain("DrawingColorBlueButton", markup, StringComparison.Ordinal);
         Assert.Contains("StrokeWidthSlider", markup, StringComparison.Ordinal);
+        Assert.Contains("ValueChanged=\"StrokeWidthSlider_ValueChanged\"", markup, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Desktop_window_places_one_annotation_layer_over_each_rendered_pdf_page()
+    {
+        var code = File.ReadAllText(GetRepositoryPath("AnoPDF.Desktop", "MainWindow.axaml.cs"));
+
+        Assert.Contains("new PdfAnnotationLayerCanvas", code, StringComparison.Ordinal);
+        Assert.Contains("new PdfAnnotationLayer()", code, StringComparison.Ordinal);
+        Assert.Contains("Children =\n            {\n                image,\n                annotationLayer", code, StringComparison.Ordinal);
+        Assert.Contains("UpdateAnnotationLayerInput", code, StringComparison.Ordinal);
     }
 
     private static XDocument LoadDesktopProject()

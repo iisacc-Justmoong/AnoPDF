@@ -16,9 +16,11 @@ AnoPDF는 PDF 위에 그리는 편집기로 가기 전, PDF를 먼저 읽고 설
 
 - `AnoPDF.Rendering`은 Docnet.Core의 PDFium native package를 사용해 PDF 페이지를 BGRA 픽셀 버퍼로 렌더링한다.
 - `AnoPDF.Viewer`는 파일 열기, 문서 검사, 전체 페이지 렌더링, 확대율 변경을 UI와 분리한 세션 모델로 제공한다.
+- `AnoPDF.Viewer`는 PDF 문서 모델과 분리된 `PdfAnnotationLayer` ink stroke 모델을 제공한다.
 - `AnoPDF.Desktop`은 Avalonia 앱이며, 초기 뷰에서 파일 다이얼로그로 PDF 경로를 받고 올바르게 열린 경우에만 PDF 표시 뷰로 전환한다.
 - 이후 뷰는 렌더링된 모든 페이지를 하단 방향으로 나열하고, 사용자가 스크롤로 문서 전체를 자유롭게 오가게 한다.
-- 창 하단에는 기본 드로잉 세트 툴바를 둔다. 현재는 Pan, Pen, Highlighter, Eraser, HSL/RGB 삼각형 색상환, stroke width 조절 UI만 있는 준비 단계이다.
+- 창 하단에는 기본 드로잉 세트 툴바를 둔다. 현재 Pen은 마우스 드래그로 쓸 수 있고, HSL/RGB 삼각형 색상환과 stroke width 슬라이더 값을 새 stroke의 색상과 크기로 사용한다. Highlighter와 Eraser는 아직 준비 단계이다.
+- 렌더링된 각 PDF 페이지는 PDF 이미지 위에 같은 크기의 `PdfAnnotationLayerCanvas` 1장을 겹쳐 표시한다. 이 레이어는 PDF 픽셀 버퍼와 별도 계층으로 유지되며 stroke 입력만 담당한다.
 
 현재 GUI Viewer의 최소 기능은 다음과 같다.
 
@@ -27,7 +29,8 @@ AnoPDF는 PDF 위에 그리는 편집기로 가기 전, PDF를 먼저 읽고 설
 - Render Document: 문서 전체 페이지를 PDFium으로 다시 렌더링한다.
 - Zoom: 확대율을 바꾸고 문서 전체 페이지를 다시 렌더링한다.
 - Document Scroll: 전체 페이지를 세로로 쌓아 스크롤로 이동한다.
-- Drawing Toolbar: 창 하단에서 기본 드로잉 도구, HSL/RGB 삼각형 색상환, 선 두께를 고른다.
+- Drawing Toolbar: 창 하단에서 Pan/Pen 도구, HSL/RGB 삼각형 색상환, 선 두께를 고른다.
+- Pen Tool: Pen 선택 후 PDF 페이지 위에서 마우스 왼쪽 버튼으로 드래그해 별도 주석 레이어에 stroke를 그린다.
 
 파일 선택기는 Avalonia 창에 연결된 `TopLevel.StorageProvider`에서 열고, 파일 열기를 지원하지 않는 실행 환경에서는 상태 표시줄에 오류를 표시한다.
 
@@ -36,7 +39,7 @@ AnoPDF는 PDF 위에 그리는 편집기로 가기 전, PDF를 먼저 읽고 설
 ## 제외 범위
 
 - 텍스트 편집을 하지 않는다.
-- 실제 ink stroke 작성, 주석 저장, 드래그 앤 드롭, 도형 그리기 기능을 만들지 않는다.
+- 주석 저장, 드래그 앤 드롭, 도형 그리기 기능을 만들지 않는다.
 
 ## 콘솔 실행
 
@@ -66,7 +69,7 @@ dotnet run --project AnoPDF.Desktop/AnoPDF.Desktop.csproj
 
 ## 검증
 
-테스트는 임시 최소 PDF 파일을 생성해 입력 검증, 메타데이터, 페이지 크기, 텍스트 샘플 제한, 텍스트 없는 페이지, JSON 저장, 렌더링 지오메트리, PDFium 렌더링, 파일 열기 세션, 전체 페이지 렌더링, 데스크탑 프로젝트 런타임 구성, 파일 선택기 연결 방식, 스크롤형 문서 뷰 구성, 하단 기본 드로잉 툴바 구성을 확인한다.
+테스트는 임시 최소 PDF 파일을 생성해 입력 검증, 메타데이터, 페이지 크기, 텍스트 샘플 제한, 텍스트 없는 페이지, JSON 저장, 렌더링 지오메트리, PDFium 렌더링, 파일 열기 세션, 전체 페이지 렌더링, 주석 레이어 stroke 모델, 데스크탑 프로젝트 런타임 구성, 파일 선택기 연결 방식, 스크롤형 문서 뷰 구성, 하단 기본 드로잉 툴바와 PDF 위 오버레이 레이어 구성을 확인한다.
 
 ```bash
 dotnet test AnoPDF.sln
@@ -77,3 +80,4 @@ dotnet build/PdfInspector.dll sample.pdf
 현재 PdfPig NuGet 패키지는 stable 버전이 없어 `UglyToad.PdfPig` `1.7.0-custom-5` prerelease 패키지를 사용한다.
 PDF 렌더링은 PDFium native를 포함하는 `Docnet.Core` `2.6.0`을 사용한다.
 GUI는 `Avalonia` `12.0.4`와 `Avalonia.Desktop` `12.0.4`를 사용한다.
+펜 입력과 주석 레이어는 Avalonia의 포인터 이벤트와 커스텀 control 렌더링으로 구현하며, 별도 외부 의존성을 추가하지 않는다.
