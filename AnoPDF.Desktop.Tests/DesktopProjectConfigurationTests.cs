@@ -69,6 +69,7 @@ public sealed class DesktopProjectConfigurationTests
     public void Desktop_window_has_a_bottom_drawing_toolbar_with_basic_tools()
     {
         var markup = File.ReadAllText(GetRepositoryPath("AnoPDF.Desktop", "MainWindow.axaml"));
+        var code = File.ReadAllText(GetRepositoryPath("AnoPDF.Desktop", "HslRgbTriangleColorPicker.cs"));
 
         Assert.Contains("DrawingToolbar", markup, StringComparison.Ordinal);
         Assert.Contains("PanToolButton", markup, StringComparison.Ordinal);
@@ -83,6 +84,8 @@ public sealed class DesktopProjectConfigurationTests
         Assert.DoesNotContain("DrawingColorBlueButton", markup, StringComparison.Ordinal);
         Assert.Contains("StrokeWidthSlider", markup, StringComparison.Ordinal);
         Assert.Contains("ValueChanged=\"StrokeWidthSlider_ValueChanged\"", markup, StringComparison.Ordinal);
+        Assert.Contains("DrawHslTriangle", code, StringComparison.Ordinal);
+        Assert.DoesNotContain("DrawRgbTriangle", code, StringComparison.Ordinal);
     }
 
     [Fact]

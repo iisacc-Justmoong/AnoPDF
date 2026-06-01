@@ -18,4 +18,8 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AnoPDF.Desktop\AnoPDF.Desktop.csproj" />
+  </ItemGroup>
+
 </Project>

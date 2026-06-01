@@ -70,7 +70,7 @@
                 <local:HslRgbTriangleColorPicker x:Name="HslRgbTriangleColorPicker"
                                                  Width="96"
                                                  Height="72"
-                                                 ToolTip.Tip="HSL RGB triangle color wheel" />
+                                                 ToolTip.Tip="HSL triangle color wheel" />
 
                 <Border Width="1"
                         Height="24"

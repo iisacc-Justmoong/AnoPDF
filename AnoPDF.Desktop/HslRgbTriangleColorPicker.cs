@@ -8,8 +8,12 @@ namespace AnoPDF.Desktop;
 public sealed class HslRgbTriangleColorPicker : Control
 {
     private const int HueSegmentCount = 24;
-    private bool isSelecting;
-    private Color selectedColor = Color.Parse("#2563EB");
+    private ColorSelectionMode colorSelectionMode;
+    private double selectedHue = 220.0 / 360.0;
+    private HslTriangleWeights selectedTriangleWeights = new(PureHue: 0.83, White: 0.12, Black: 0.05);
+    private Color selectedColor = HslTriangleColorSpace.FromWeights(
+        220.0 / 360.0,
+        new HslTriangleWeights(PureHue: 0.83, White: 0.12, Black: 0.05));
 
     public event EventHandler<Color>? SelectedColorChanged;
 
@@ -44,7 +48,7 @@ public sealed class HslRgbTriangleColorPicker : Control
         var innerRadius = outerRadius * 0.66;
 
         DrawHueWheel(context, center, innerRadius, outerRadius);
-        DrawRgbTriangle(context, center, innerRadius * 0.84, SelectedColor);
+        DrawHslTriangle(context, center, innerRadius * 0.84, selectedHue, selectedTriangleWeights);
     }
 
     protected override Size MeasureOverride(Size availableSize)
@@ -62,9 +66,10 @@ public sealed class HslRgbTriangleColorPicker : Control
             return;
         }
 
-        isSelecting = TrySelectColor(pointer.Position);
-        if (isSelecting)
+        colorSelectionMode = GetSelectionMode(pointer.Position);
+        if (colorSelectionMode is not ColorSelectionMode.None)
         {
+            TrySelectColor(pointer.Position, colorSelectionMode);
             e.Pointer.Capture(this);
             e.Handled = true;
         }
@@ -74,7 +79,7 @@ public sealed class HslRgbTriangleColorPicker : Control
     {
         base.OnPointerMoved(e);
 
-        if (!isSelecting)
+        if (colorSelectionMode is ColorSelectionMode.None)
         {
             return;
         }
@@ -86,7 +91,7 @@ public sealed class HslRgbTriangleColorPicker : Control
             return;
         }
 
-        TrySelectColor(pointer.Position);
+        TrySelectColor(pointer.Position, colorSelectionMode);
         e.Handled = true;
     }
 
@@ -94,19 +99,19 @@ public sealed class HslRgbTriangleColorPicker : Control
     {
         base.OnPointerReleased(e);
 
-        if (!isSelecting)
+        if (colorSelectionMode is ColorSelectionMode.None)
         {
             return;
         }
 
-        TrySelectColor(e.GetPosition(this));
+        TrySelectColor(e.GetPosition(this), colorSelectionMode);
         EndSelection(e.Pointer);
         e.Handled = true;
     }
 
     private void EndSelection(IPointer pointer)
     {
-        isSelecting = false;
+        colorSelectionMode = ColorSelectionMode.None;
         pointer.Capture(null);
     }
 
@@ -121,7 +126,7 @@ public sealed class HslRgbTriangleColorPicker : Control
             var startAngle = index * 360.0 / HueSegmentCount;
             var endAngle = (index + 1) * 360.0 / HueSegmentCount;
             var hue = (startAngle + endAngle) / 720.0;
-            var brush = new SolidColorBrush(FromHsl(hue, saturation: 1, lightness: 0.5));
+            var brush = new SolidColorBrush(HslTriangleColorSpace.FromHsl(hue, saturation: 1, lightness: 0.5));
 
             context.DrawGeometry(
                 brush,
@@ -137,30 +142,93 @@ public sealed class HslRgbTriangleColorPicker : Control
             outerRadius);
     }
 
-    private static void DrawRgbTriangle(DrawingContext context, Point center, double radius, Color selectedColor)
+    private static void DrawHslTriangle(
+        DrawingContext context,
+        Point center,
+        double radius,
+        double hue,
+        HslTriangleWeights selectedWeights)
     {
         var top = PointOnCircle(center, radius, -90);
         var left = PointOnCircle(center, radius, 150);
         var right = PointOnCircle(center, radius, 30);
-        var core = center;
 
-        context.DrawGeometry(Brushes.White, null, CreateTriangleGeometry(top, left, right));
-        context.DrawGeometry(new SolidColorBrush(Color.FromArgb(185, 220, 38, 38)), null, CreateTriangleGeometry(core, top, left));
-        context.DrawGeometry(new SolidColorBrush(Color.FromArgb(170, 22, 163, 74)), null, CreateTriangleGeometry(core, left, right));
-        context.DrawGeometry(new SolidColorBrush(Color.FromArgb(170, 37, 99, 235)), null, CreateTriangleGeometry(core, right, top));
+        DrawHslTriangleFill(context, top, left, right, hue);
         context.DrawGeometry(
             null,
             new Pen(new SolidColorBrush(Color.Parse("#111827")), 1),
             CreateTriangleGeometry(top, left, right));
+
+        var marker = FromWeights(top, left, right, selectedWeights);
         context.DrawEllipse(
-            new SolidColorBrush(selectedColor),
+            new SolidColorBrush(HslTriangleColorSpace.FromWeights(hue, selectedWeights)),
             new Pen(new SolidColorBrush(Color.Parse("#111827")), 1),
-            center,
+            marker,
             3,
             3);
     }
 
-    private bool TrySelectColor(Point position)
+    private static void DrawHslTriangleFill(
+        DrawingContext context,
+        Point top,
+        Point left,
+        Point right,
+        double hue)
+    {
+        var minX = (int)Math.Floor(Math.Min(top.X, Math.Min(left.X, right.X)));
+        var maxX = (int)Math.Ceiling(Math.Max(top.X, Math.Max(left.X, right.X)));
+        var minY = (int)Math.Floor(Math.Min(top.Y, Math.Min(left.Y, right.Y)));
+        var maxY = (int)Math.Ceiling(Math.Max(top.Y, Math.Max(left.Y, right.Y)));
+
+        for (var y = minY; y <= maxY; y++)
+        {
+            for (var x = minX; x <= maxX; x++)
+            {
+                var sample = new Point(x + 0.5, y + 0.5);
+                if (!TryGetWeights(sample, top, left, right, out var weights))
+                {
+                    continue;
+                }
+
+                context.DrawRectangle(
+                    new SolidColorBrush(HslTriangleColorSpace.FromWeights(hue, weights)),
+                    null,
+                    new Rect(x, y, 1, 1));
+            }
+        }
+    }
+
+    private ColorSelectionMode GetSelectionMode(Point position)
+    {
+        if (Bounds.Width <= 0 || Bounds.Height <= 0)
+        {
+            return ColorSelectionMode.None;
+        }
+
+        var size = Math.Min(Bounds.Width, Bounds.Height);
+        var center = new Point(Bounds.Width / 2, Bounds.Height / 2);
+        var outerRadius = size * 0.46;
+        var innerRadius = outerRadius * 0.66;
+        var triangleRadius = innerRadius * 0.84;
+        var top = PointOnCircle(center, triangleRadius, -90);
+        var left = PointOnCircle(center, triangleRadius, 150);
+        var right = PointOnCircle(center, triangleRadius, 30);
+
+        if (TryGetWeights(position, top, left, right, out _))
+        {
+            return ColorSelectionMode.HslTriangle;
+        }
+
+        var deltaX = position.X - center.X;
+        var deltaY = position.Y - center.Y;
+        var distance = Math.Sqrt((deltaX * deltaX) + (deltaY * deltaY));
+
+        return distance >= innerRadius && distance <= outerRadius
+            ? ColorSelectionMode.HueRing
+            : ColorSelectionMode.None;
+    }
+
+    private bool TrySelectColor(Point position, ColorSelectionMode selectionMode)
     {
         if (Bounds.Width <= 0 || Bounds.Height <= 0)
         {
@@ -170,21 +238,81 @@ public sealed class HslRgbTriangleColorPicker : Control
         var size = Math.Min(Bounds.Width, Bounds.Height);
         var center = new Point(Bounds.Width / 2, Bounds.Height / 2);
         var outerRadius = size * 0.46;
+        var innerRadius = outerRadius * 0.66;
+        var triangleRadius = innerRadius * 0.84;
+
+        if (selectionMode is ColorSelectionMode.HslTriangle)
+        {
+            var top = PointOnCircle(center, triangleRadius, -90);
+            var left = PointOnCircle(center, triangleRadius, 150);
+            var right = PointOnCircle(center, triangleRadius, 30);
+            if (!TryGetWeights(position, top, left, right, out var weights))
+            {
+                return false;
+            }
+
+            selectedTriangleWeights = weights;
+            SelectedColor = HslTriangleColorSpace.FromWeights(selectedHue, selectedTriangleWeights);
+            return true;
+        }
+
         var deltaX = position.X - center.X;
         var deltaY = position.Y - center.Y;
-        var distance = Math.Sqrt((deltaX * deltaX) + (deltaY * deltaY));
+        var angle = Math.Atan2(deltaY, deltaX);
+        selectedHue = ((angle * 180.0 / Math.PI) + 360.0) % 360.0 / 360.0;
+        SelectedColor = HslTriangleColorSpace.FromWeights(selectedHue, selectedTriangleWeights);
+        return true;
+    }
 
-        if (distance > outerRadius)
+    private static bool TryGetWeights(
+        Point point,
+        Point pureHue,
+        Point white,
+        Point black,
+        out HslTriangleWeights weights)
+    {
+        var denominator =
+            ((white.Y - black.Y) * (pureHue.X - black.X)) +
+            ((black.X - white.X) * (pureHue.Y - black.Y));
+
+        if (Math.Abs(denominator) < double.Epsilon)
         {
+            weights = default;
             return false;
         }
 
-        var angle = Math.Atan2(deltaY, deltaX);
-        var hue = ((angle * 180.0 / Math.PI) + 360.0) % 360.0 / 360.0;
-        var saturation = Math.Clamp(distance / outerRadius, 0, 1);
+        var pureHueWeight =
+            (((white.Y - black.Y) * (point.X - black.X)) +
+             ((black.X - white.X) * (point.Y - black.Y))) / denominator;
+        var whiteWeight =
+            (((black.Y - pureHue.Y) * (point.X - black.X)) +
+             ((pureHue.X - black.X) * (point.Y - black.Y))) / denominator;
+        var blackWeight = 1 - pureHueWeight - whiteWeight;
 
-        SelectedColor = FromHsl(hue, saturation, lightness: 0.5);
+        const double Tolerance = 0.0001;
+        if (pureHueWeight < -Tolerance || whiteWeight < -Tolerance || blackWeight < -Tolerance)
+        {
+            weights = default;
+            return false;
+        }
+
+        weights = new HslTriangleWeights(
+            Math.Clamp(pureHueWeight, 0, 1),
+            Math.Clamp(whiteWeight, 0, 1),
+            Math.Clamp(blackWeight, 0, 1));
         return true;
+    }
+
+    private static Point FromWeights(
+        Point pureHue,
+        Point white,
+        Point black,
+        HslTriangleWeights weights)
+    {
+        var normalized = weights.Normalize();
+        return new Point(
+            (pureHue.X * normalized.PureHue) + (white.X * normalized.White) + (black.X * normalized.Black),
+            (pureHue.Y * normalized.PureHue) + (white.Y * normalized.White) + (black.Y * normalized.Black));
     }
 
     private static StreamGeometry CreateRingSegmentGeometry(
@@ -232,31 +360,10 @@ public sealed class HslRgbTriangleColorPicker : Control
             center.Y + (Math.Sin(angleRadians) * radius));
     }
 
-    private static Color FromHsl(double hue, double saturation, double lightness)
+    private enum ColorSelectionMode
     {
-        var chroma = (1 - Math.Abs((2 * lightness) - 1)) * saturation;
-        var huePrime = hue * 6;
-        var x = chroma * (1 - Math.Abs((huePrime % 2) - 1));
-        var match = lightness - (chroma / 2);
-
-        var (red, green, blue) = huePrime switch
-        {
-            >= 0 and < 1 => (chroma, x, 0.0),
-            >= 1 and < 2 => (x, chroma, 0.0),
-            >= 2 and < 3 => (0.0, chroma, x),
-            >= 3 and < 4 => (0.0, x, chroma),
-            >= 4 and < 5 => (x, 0.0, chroma),
-            _ => (chroma, 0.0, x)
-        };
-
-        return Color.FromRgb(
-            ToByte(red + match),
-            ToByte(green + match),
-            ToByte(blue + match));
-    }
-
-    private static byte ToByte(double value)
-    {
-        return (byte)Math.Clamp(Math.Round(value * 255), byte.MinValue, byte.MaxValue);
+        None,
+        HueRing,
+        HslTriangle
     }
 }
