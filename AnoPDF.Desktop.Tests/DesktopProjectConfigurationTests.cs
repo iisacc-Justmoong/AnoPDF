@@ -66,6 +66,21 @@ public sealed class DesktopProjectConfigurationTests
     }
 
     [Fact]
+    public void Desktop_window_uses_high_contrast_modern_layout_chrome()
+    {
+        var markup = File.ReadAllText(GetRepositoryPath("AnoPDF.Desktop", "MainWindow.axaml"));
+
+        Assert.Contains("Background=\"#E5E7EB\"", markup, StringComparison.Ordinal);
+        Assert.Contains("StartPanel", markup, StringComparison.Ordinal);
+        Assert.Contains("ViewerTopBar", markup, StringComparison.Ordinal);
+        Assert.Contains("Background=\"#0F172A\"", markup, StringComparison.Ordinal);
+        Assert.Contains("Background=\"#0F62FE\"", markup, StringComparison.Ordinal);
+        Assert.Contains("Foreground=\"#FFFFFF\"", markup, StringComparison.Ordinal);
+        Assert.True(GetContrastRatio("#0F62FE", "#FFFFFF") >= 4.5);
+        Assert.True(GetContrastRatio("#0F172A", "#F8FAFC") >= 7);
+    }
+
+    [Fact]
     public void Desktop_window_has_a_bottom_drawing_toolbar_with_basic_tools()
     {
         var markup = File.ReadAllText(GetRepositoryPath("AnoPDF.Desktop", "MainWindow.axaml"));
@@ -118,5 +133,31 @@ public sealed class DesktopProjectConfigurationTests
             .Descendants(propertyName)
             .Select(element => element.Value)
             .FirstOrDefault();
+    }
+
+    private static double GetContrastRatio(string backgroundHex, string foregroundHex)
+    {
+        var background = GetRelativeLuminance(backgroundHex);
+        var foreground = GetRelativeLuminance(foregroundHex);
+        var lighter = Math.Max(background, foreground);
+        var darker = Math.Min(background, foreground);
+
+        return (lighter + 0.05) / (darker + 0.05);
+    }
+
+    private static double GetRelativeLuminance(string hex)
+    {
+        var red = Convert.ToInt32(hex[1..3], 16) / 255.0;
+        var green = Convert.ToInt32(hex[3..5], 16) / 255.0;
+        var blue = Convert.ToInt32(hex[5..7], 16) / 255.0;
+
+        return (0.2126 * ToLinear(red)) + (0.7152 * ToLinear(green)) + (0.0722 * ToLinear(blue));
+    }
+
+    private static double ToLinear(double channel)
+    {
+        return channel <= 0.03928
+            ? channel / 12.92
+            : Math.Pow((channel + 0.055) / 1.055, 2.4);
     }
 }

@@ -19,6 +19,7 @@ AnoPDF는 PDF 위에 그리는 편집기로 가기 전, PDF를 먼저 읽고 설
 - `AnoPDF.Viewer`는 PDF 문서 모델과 분리된 `PdfAnnotationLayer` ink stroke 모델을 제공한다.
 - `AnoPDF.Desktop`은 Avalonia 앱이며, 초기 뷰에서 파일 다이얼로그로 PDF 경로를 받고 올바르게 열린 경우에만 PDF 표시 뷰로 전환한다.
 - 이후 뷰는 렌더링된 모든 페이지를 하단 방향으로 나열하고, 사용자가 스크롤로 문서 전체를 자유롭게 오가게 한다.
+- GUI는 밝은 작업 배경, 어두운 상단/하단 툴바, 고대비 primary 버튼을 사용해 버튼과 문서 영역의 시각 계층을 분명히 한다.
 - 창 하단에는 기본 드로잉 세트 툴바를 둔다. 현재 Pen은 마우스 드래그로 쓸 수 있고, 포토샵 색상환 모드와 같은 HSL 내부 삼각형 색상환과 stroke width 슬라이더 값을 새 stroke의 색상과 크기로 사용한다. Highlighter와 Eraser는 아직 준비 단계이다.
 - 렌더링된 각 PDF 페이지는 PDF 이미지 위에 같은 크기의 `PdfAnnotationLayerCanvas` 1장을 겹쳐 표시한다. 이 레이어는 PDF 픽셀 버퍼와 별도 계층으로 유지되며 stroke 입력만 담당한다.
 
@@ -69,7 +70,7 @@ dotnet run --project AnoPDF.Desktop/AnoPDF.Desktop.csproj
 
 ## 검증
 
-테스트는 임시 최소 PDF 파일을 생성해 입력 검증, 메타데이터, 페이지 크기, 텍스트 샘플 제한, 텍스트 없는 페이지, JSON 저장, 렌더링 지오메트리, PDFium 렌더링, 파일 열기 세션, 전체 페이지 렌더링, 주석 레이어 stroke 모델, 데스크탑 프로젝트 런타임 구성, 파일 선택기 연결 방식, 스크롤형 문서 뷰 구성, 하단 기본 드로잉 툴바와 PDF 위 오버레이 레이어 구성을 확인한다.
+테스트는 임시 최소 PDF 파일을 생성해 입력 검증, 메타데이터, 페이지 크기, 텍스트 샘플 제한, 텍스트 없는 페이지, JSON 저장, 렌더링 지오메트리, PDFium 렌더링, 파일 열기 세션, 전체 페이지 렌더링, 주석 레이어 stroke 모델, 데스크탑 프로젝트 런타임 구성, 파일 선택기 연결 방식, 스크롤형 문서 뷰 구성, 하단 기본 드로잉 툴바, 고대비 GUI chrome, PDF 위 오버레이 레이어 구성을 확인한다.
 
 ```bash
 dotnet test AnoPDF.sln

@@ -312,8 +312,8 @@ public partial class MainWindow : Window
 
     private void UpdateDrawingToolButtons()
     {
-        PanToolButton.FontWeight = selectedDrawingTool == DrawingTool.Pan ? FontWeight.SemiBold : FontWeight.Normal;
-        PenToolButton.FontWeight = selectedDrawingTool == DrawingTool.Pen ? FontWeight.SemiBold : FontWeight.Normal;
+        UpdateToolButtonStyle(PanToolButton, selectedDrawingTool == DrawingTool.Pan);
+        UpdateToolButtonStyle(PenToolButton, selectedDrawingTool == DrawingTool.Pen);
     }
 
     private void UpdateAnnotationLayerInput()
@@ -333,6 +333,14 @@ public partial class MainWindow : Window
     private static InkColor ToInkColor(Color color)
     {
         return new InkColor(color.A, color.R, color.G, color.B);
+    }
+
+    private static void UpdateToolButtonStyle(Button button, bool isSelected)
+    {
+        button.Background = new SolidColorBrush(Color.Parse(isSelected ? "#0F62FE" : "#F8FAFC"));
+        button.BorderBrush = new SolidColorBrush(Color.Parse(isSelected ? "#93C5FD" : "#CBD5E1"));
+        button.Foreground = new SolidColorBrush(Color.Parse(isSelected ? "#FFFFFF" : "#0F172A"));
+        button.FontWeight = FontWeight.SemiBold;
     }
 
     private static Bitmap CreateBitmap(RenderedPdfPage page)
