@@ -65,6 +65,22 @@ public sealed class DesktopProjectConfigurationTests
         Assert.DoesNotContain("파일 다이얼로그 열기", markup, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void Desktop_window_has_a_bottom_drawing_toolbar_with_basic_tools()
+    {
+        var markup = File.ReadAllText(GetRepositoryPath("AnoPDF.Desktop", "MainWindow.axaml"));
+
+        Assert.Contains("DrawingToolbar", markup, StringComparison.Ordinal);
+        Assert.Contains("PanToolButton", markup, StringComparison.Ordinal);
+        Assert.Contains("PenToolButton", markup, StringComparison.Ordinal);
+        Assert.Contains("HighlighterToolButton", markup, StringComparison.Ordinal);
+        Assert.Contains("EraserToolButton", markup, StringComparison.Ordinal);
+        Assert.Contains("DrawingColorBlackButton", markup, StringComparison.Ordinal);
+        Assert.Contains("DrawingColorRedButton", markup, StringComparison.Ordinal);
+        Assert.Contains("DrawingColorBlueButton", markup, StringComparison.Ordinal);
+        Assert.Contains("StrokeWidthSlider", markup, StringComparison.Ordinal);
+    }
+
     private static XDocument LoadDesktopProject()
     {
         var projectPath = GetRepositoryPath("AnoPDF.Desktop", "AnoPDF.Desktop.csproj");

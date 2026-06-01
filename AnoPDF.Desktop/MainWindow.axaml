@@ -17,6 +17,94 @@
                        Text="Ready" />
         </Border>
 
+        <Border x:Name="DrawingToolbar"
+                DockPanel.Dock="Bottom"
+                Background="#F9FAFB"
+                BorderBrush="#D7DCE2"
+                BorderThickness="0,1,0,0"
+                Padding="12,8">
+            <StackPanel HorizontalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="10">
+                <TextBlock VerticalAlignment="Center"
+                           Foreground="#374151"
+                           FontWeight="SemiBold"
+                           Text="Draw" />
+
+                <Button x:Name="PanToolButton"
+                        Width="64"
+                        Height="32"
+                        HorizontalContentAlignment="Center"
+                        Content="Pan"
+                        ToolTip.Tip="Pan document" />
+                <Button x:Name="PenToolButton"
+                        Width="64"
+                        Height="32"
+                        HorizontalContentAlignment="Center"
+                        Content="Pen"
+                        ToolTip.Tip="Draw with pen" />
+                <Button x:Name="HighlighterToolButton"
+                        Width="96"
+                        Height="32"
+                        HorizontalContentAlignment="Center"
+                        Content="Highlighter"
+                        ToolTip.Tip="Draw with highlighter" />
+                <Button x:Name="EraserToolButton"
+                        Width="72"
+                        Height="32"
+                        HorizontalContentAlignment="Center"
+                        Content="Eraser"
+                        ToolTip.Tip="Erase drawing strokes" />
+
+                <Border Width="1"
+                        Height="24"
+                        Margin="4,0"
+                        Background="#D7DCE2" />
+
+                <TextBlock VerticalAlignment="Center"
+                           Foreground="#374151"
+                           Text="Color" />
+                <Button x:Name="DrawingColorBlackButton"
+                        Width="28"
+                        Height="28"
+                        Background="#111827"
+                        BorderBrush="#111827"
+                        Content=""
+                        ToolTip.Tip="Black ink" />
+                <Button x:Name="DrawingColorRedButton"
+                        Width="28"
+                        Height="28"
+                        Background="#DC2626"
+                        BorderBrush="#DC2626"
+                        Content=""
+                        ToolTip.Tip="Red ink" />
+                <Button x:Name="DrawingColorBlueButton"
+                        Width="28"
+                        Height="28"
+                        Background="#2563EB"
+                        BorderBrush="#2563EB"
+                        Content=""
+                        ToolTip.Tip="Blue ink" />
+
+                <Border Width="1"
+                        Height="24"
+                        Margin="4,0"
+                        Background="#D7DCE2" />
+
+                <TextBlock VerticalAlignment="Center"
+                           Foreground="#374151"
+                           Text="Width" />
+                <Slider x:Name="StrokeWidthSlider"
+                        Width="120"
+                        Minimum="1"
+                        Maximum="16"
+                        Value="3"
+                        TickFrequency="1"
+                        IsSnapToTickEnabled="True"
+                        ToolTip.Tip="Stroke width" />
+            </StackPanel>
+        </Border>
+
         <Grid>
             <Grid x:Name="StartView">
                 <StackPanel HorizontalAlignment="Center"
