@@ -75,9 +75,10 @@ public sealed class DesktopProjectConfigurationTests
         Assert.Contains("PenToolButton", markup, StringComparison.Ordinal);
         Assert.Contains("HighlighterToolButton", markup, StringComparison.Ordinal);
         Assert.Contains("EraserToolButton", markup, StringComparison.Ordinal);
-        Assert.Contains("DrawingColorBlackButton", markup, StringComparison.Ordinal);
-        Assert.Contains("DrawingColorRedButton", markup, StringComparison.Ordinal);
-        Assert.Contains("DrawingColorBlueButton", markup, StringComparison.Ordinal);
+        Assert.Contains("HslRgbTriangleColorPicker", markup, StringComparison.Ordinal);
+        Assert.DoesNotContain("DrawingColorBlackButton", markup, StringComparison.Ordinal);
+        Assert.DoesNotContain("DrawingColorRedButton", markup, StringComparison.Ordinal);
+        Assert.DoesNotContain("DrawingColorBlueButton", markup, StringComparison.Ordinal);
         Assert.Contains("StrokeWidthSlider", markup, StringComparison.Ordinal);
     }
 

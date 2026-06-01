@@ -18,7 +18,7 @@ AnoPDF는 PDF 위에 그리는 편집기로 가기 전, PDF를 먼저 읽고 설
 - `AnoPDF.Viewer`는 파일 열기, 문서 검사, 전체 페이지 렌더링, 확대율 변경을 UI와 분리한 세션 모델로 제공한다.
 - `AnoPDF.Desktop`은 Avalonia 앱이며, 초기 뷰에서 파일 다이얼로그로 PDF 경로를 받고 올바르게 열린 경우에만 PDF 표시 뷰로 전환한다.
 - 이후 뷰는 렌더링된 모든 페이지를 하단 방향으로 나열하고, 사용자가 스크롤로 문서 전체를 자유롭게 오가게 한다.
-- 창 하단에는 기본 드로잉 세트 툴바를 둔다. 현재는 Pan, Pen, Highlighter, Eraser, 색상 선택, stroke width 조절 UI만 있는 준비 단계이다.
+- 창 하단에는 기본 드로잉 세트 툴바를 둔다. 현재는 Pan, Pen, Highlighter, Eraser, HSL/RGB 삼각형 색상환, stroke width 조절 UI만 있는 준비 단계이다.
 
 현재 GUI Viewer의 최소 기능은 다음과 같다.
 
@@ -27,7 +27,7 @@ AnoPDF는 PDF 위에 그리는 편집기로 가기 전, PDF를 먼저 읽고 설
 - Render Document: 문서 전체 페이지를 PDFium으로 다시 렌더링한다.
 - Zoom: 확대율을 바꾸고 문서 전체 페이지를 다시 렌더링한다.
 - Document Scroll: 전체 페이지를 세로로 쌓아 스크롤로 이동한다.
-- Drawing Toolbar: 창 하단에서 기본 드로잉 도구, 색상, 선 두께를 고른다.
+- Drawing Toolbar: 창 하단에서 기본 드로잉 도구, HSL/RGB 삼각형 색상환, 선 두께를 고른다.
 
 파일 선택기는 Avalonia 창에 연결된 `TopLevel.StorageProvider`에서 열고, 파일 열기를 지원하지 않는 실행 환경에서는 상태 표시줄에 오류를 표시한다.
 
