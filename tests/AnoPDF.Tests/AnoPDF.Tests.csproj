@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AnoPDF.Rendering\AnoPDF.Rendering.csproj" />
+    <ProjectReference Include="..\..\src\AnoPDF\AnoPDF.csproj" />
   </ItemGroup>
 
 </Project>

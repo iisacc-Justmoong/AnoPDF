@@ -1,20 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnoPDF", "AnoPDF\AnoPDF.csproj", "{327E40F6-807E-41A1-8FB9-B6C7FACD3DE7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnoPDF", "src\AnoPDF\AnoPDF.csproj", "{327E40F6-807E-41A1-8FB9-B6C7FACD3DE7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnoPDF.Tests", "AnoPDF.Tests\AnoPDF.Tests.csproj", "{15D9A904-130F-4449-B137-D9FE7FA1B408}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnoPDF.Tests", "tests\AnoPDF.Tests\AnoPDF.Tests.csproj", "{15D9A904-130F-4449-B137-D9FE7FA1B408}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnoPDF.Rendering", "AnoPDF.Rendering\AnoPDF.Rendering.csproj", "{E16460C6-362A-40A8-BC7F-EEDAD340D194}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnoPDF.Rendering", "src\AnoPDF.Rendering\AnoPDF.Rendering.csproj", "{E16460C6-362A-40A8-BC7F-EEDAD340D194}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnoPDF.Rendering.Tests", "AnoPDF.Rendering.Tests\AnoPDF.Rendering.Tests.csproj", "{8BB2BED5-18BC-4FAD-A830-FC765983AE3D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnoPDF.Rendering.Tests", "tests\AnoPDF.Rendering.Tests\AnoPDF.Rendering.Tests.csproj", "{8BB2BED5-18BC-4FAD-A830-FC765983AE3D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnoPDF.Viewer", "AnoPDF.Viewer\AnoPDF.Viewer.csproj", "{0488CFA9-B7D6-408A-9908-C6D6905F0067}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnoPDF.Viewer", "src\AnoPDF.Viewer\AnoPDF.Viewer.csproj", "{0488CFA9-B7D6-408A-9908-C6D6905F0067}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnoPDF.Viewer.Tests", "AnoPDF.Viewer.Tests\AnoPDF.Viewer.Tests.csproj", "{078B7832-B6D7-4615-9A11-7CBE7004FB75}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnoPDF.Viewer.Tests", "tests\AnoPDF.Viewer.Tests\AnoPDF.Viewer.Tests.csproj", "{078B7832-B6D7-4615-9A11-7CBE7004FB75}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnoPDF.Desktop", "AnoPDF.Desktop\AnoPDF.Desktop.csproj", "{59963D2F-62BC-4C8D-9128-36EEAC63D886}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnoPDF.Desktop", "src\AnoPDF.Desktop\AnoPDF.Desktop.csproj", "{59963D2F-62BC-4C8D-9128-36EEAC63D886}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnoPDF.Desktop.Tests", "AnoPDF.Desktop.Tests\AnoPDF.Desktop.Tests.csproj", "{D2074ADD-EF72-47D4-88E5-E72790173500}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnoPDF.Desktop.Tests", "tests\AnoPDF.Desktop.Tests\AnoPDF.Desktop.Tests.csproj", "{D2074ADD-EF72-47D4-88E5-E72790173500}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

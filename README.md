@@ -45,19 +45,19 @@ AnoPDF는 PDF 위에 그리는 편집기로 가기 전, PDF를 먼저 읽고 설
 ## 콘솔 실행
 
 ```bash
-dotnet run --project AnoPDF/AnoPDF.csproj -- sample.pdf
+dotnet run --project src/AnoPDF/AnoPDF.csproj -- sample.pdf
 ```
 
 JSON 출력 경로를 지정할 수 있다.
 
 ```bash
-dotnet run --project AnoPDF/AnoPDF.csproj -- sample.pdf --json sample.analysis.json
+dotnet run --project src/AnoPDF/AnoPDF.csproj -- sample.pdf --json sample.analysis.json
 ```
 
 JSON 저장을 생략할 수도 있다.
 
 ```bash
-dotnet run --project AnoPDF/AnoPDF.csproj -- sample.pdf --no-json
+dotnet run --project src/AnoPDF/AnoPDF.csproj -- sample.pdf --no-json
 ```
 
 ## GUI 실행
@@ -65,7 +65,7 @@ dotnet run --project AnoPDF/AnoPDF.csproj -- sample.pdf --no-json
 다음 명령으로 GUI Viewer를 실행한다.
 
 ```bash
-dotnet run --project AnoPDF.Desktop/AnoPDF.Desktop.csproj
+dotnet run --project src/AnoPDF.Desktop/AnoPDF.Desktop.csproj
 ```
 
 ## 검증
@@ -74,7 +74,7 @@ dotnet run --project AnoPDF.Desktop/AnoPDF.Desktop.csproj
 
 ```bash
 dotnet test AnoPDF.sln
-dotnet build AnoPDF.Desktop/AnoPDF.Desktop.csproj -c Release -o build
+dotnet build src/AnoPDF.Desktop/AnoPDF.Desktop.csproj -c Release -o build
 dotnet build/PdfInspector.dll sample.pdf
 ```
 
@@ -82,3 +82,9 @@ dotnet build/PdfInspector.dll sample.pdf
 PDF 렌더링은 PDFium native를 포함하는 `Docnet.Core` `2.6.0`을 사용한다.
 GUI는 `Avalonia` `12.0.4`와 `Avalonia.Desktop` `12.0.4`를 사용한다.
 펜 입력과 주석 레이어는 Avalonia의 포인터 이벤트와 커스텀 control 렌더링으로 구현하며, 별도 외부 의존성을 추가하지 않는다.
+
+## Source layout
+
+Application and library projects live under `src/`; automated test projects live under `tests/`. Build configuration stays at the root, and all build output belongs under `build/`.
+
+Desktop configuration tests locate `AnoPDF.sln` from the test output directory, so repository-relative source checks also work with project-specific output folders under `build/`.

@@ -31,7 +31,7 @@ public sealed class DesktopProjectConfigurationTests
     [Fact]
     public void Desktop_window_presents_pdf_pages_as_a_scrollable_document_stack()
     {
-        var markup = File.ReadAllText(GetRepositoryPath("AnoPDF.Desktop", "MainWindow.axaml"));
+        var markup = File.ReadAllText(GetRepositoryPath("src/AnoPDF.Desktop", "MainWindow.axaml"));
 
         Assert.Contains("ScrollViewer", markup, StringComparison.Ordinal);
         Assert.Contains("PageStack", markup, StringComparison.Ordinal);
@@ -42,7 +42,7 @@ public sealed class DesktopProjectConfigurationTests
     [Fact]
     public void Desktop_window_opens_pdf_dialog_from_the_attached_top_level()
     {
-        var code = File.ReadAllText(GetRepositoryPath("AnoPDF.Desktop", "MainWindow.axaml.cs"));
+        var code = File.ReadAllText(GetRepositoryPath("src/AnoPDF.Desktop", "MainWindow.axaml.cs"));
 
         Assert.Contains("TopLevel.GetTopLevel(this)", code, StringComparison.Ordinal);
         Assert.Contains("storageProvider.CanOpen", code, StringComparison.Ordinal);
@@ -53,7 +53,7 @@ public sealed class DesktopProjectConfigurationTests
     [Fact]
     public void Desktop_start_view_has_a_direct_file_dialog_button_below_the_path_text()
     {
-        var markup = File.ReadAllText(GetRepositoryPath("AnoPDF.Desktop", "MainWindow.axaml"));
+        var markup = File.ReadAllText(GetRepositoryPath("src/AnoPDF.Desktop", "MainWindow.axaml"));
         var pathTextIndex = markup.IndexOf("SelectedPathText", StringComparison.Ordinal);
         var directButtonIndex = markup.IndexOf("DirectFileDialogButton", StringComparison.Ordinal);
 
@@ -68,7 +68,7 @@ public sealed class DesktopProjectConfigurationTests
     [Fact]
     public void Desktop_window_uses_high_contrast_modern_layout_chrome()
     {
-        var markup = File.ReadAllText(GetRepositoryPath("AnoPDF.Desktop", "MainWindow.axaml"));
+        var markup = File.ReadAllText(GetRepositoryPath("src/AnoPDF.Desktop", "MainWindow.axaml"));
 
         Assert.Contains("Background=\"#E5E7EB\"", markup, StringComparison.Ordinal);
         Assert.Contains("StartPanel", markup, StringComparison.Ordinal);
@@ -83,8 +83,8 @@ public sealed class DesktopProjectConfigurationTests
     [Fact]
     public void Desktop_window_has_a_bottom_drawing_toolbar_with_basic_tools()
     {
-        var markup = File.ReadAllText(GetRepositoryPath("AnoPDF.Desktop", "MainWindow.axaml"));
-        var code = File.ReadAllText(GetRepositoryPath("AnoPDF.Desktop", "HslRgbTriangleColorPicker.cs"));
+        var markup = File.ReadAllText(GetRepositoryPath("src/AnoPDF.Desktop", "MainWindow.axaml"));
+        var code = File.ReadAllText(GetRepositoryPath("src/AnoPDF.Desktop", "HslRgbTriangleColorPicker.cs"));
 
         Assert.Contains("DrawingToolbar", markup, StringComparison.Ordinal);
         Assert.Contains("PanToolButton", markup, StringComparison.Ordinal);
@@ -106,7 +106,7 @@ public sealed class DesktopProjectConfigurationTests
     [Fact]
     public void Desktop_window_places_one_annotation_layer_over_each_rendered_pdf_page()
     {
-        var code = File.ReadAllText(GetRepositoryPath("AnoPDF.Desktop", "MainWindow.axaml.cs"));
+        var code = File.ReadAllText(GetRepositoryPath("src/AnoPDF.Desktop", "MainWindow.axaml.cs"));
 
         Assert.Contains("new PdfAnnotationLayerCanvas", code, StringComparison.Ordinal);
         Assert.Contains("new PdfAnnotationLayer()", code, StringComparison.Ordinal);
@@ -116,15 +116,25 @@ public sealed class DesktopProjectConfigurationTests
 
     private static XDocument LoadDesktopProject()
     {
-        var projectPath = GetRepositoryPath("AnoPDF.Desktop", "AnoPDF.Desktop.csproj");
+        var projectPath = GetRepositoryPath("src/AnoPDF.Desktop", "AnoPDF.Desktop.csproj");
 
         return XDocument.Load(projectPath);
     }
 
     private static string GetRepositoryPath(params string[] paths)
     {
-        return Path.GetFullPath(Path.Combine(
-            [AppContext.BaseDirectory, "..", "..", "..", "..", .. paths]));
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            if (File.Exists(Path.Combine(directory.FullName, "AnoPDF.sln")))
+            {
+                return Path.Combine([directory.FullName, .. paths]);
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new DirectoryNotFoundException("Could not locate the AnoPDF repository root.");
     }
 
     private static string? GetProperty(XContainer project, string propertyName)

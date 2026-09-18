@@ -19,8 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AnoPDF.Viewer\AnoPDF.Viewer.csproj" />
-    <ProjectReference Include="..\AnoPDF.Rendering\AnoPDF.Rendering.csproj" />
+    <ProjectReference Include="..\..\src\AnoPDF.Rendering\AnoPDF.Rendering.csproj" />
   </ItemGroup>
 
 </Project>
