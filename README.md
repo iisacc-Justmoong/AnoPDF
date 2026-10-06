@@ -1,76 +1,84 @@
 # AnoPDF
 
-AnoPDF는 PDF 위에 그리는 편집기로 가기 전, PDF를 먼저 읽고 설명하고 렌더링하는 기반을 단계적으로 만든다. 현재 구성은 콘솔 기반 `PDF Inspector 0.1`과 Avalonia 기반 GUI Viewer이다.
+AnoPDF is a step-by-step foundation for the editor that draws on top of PDF, first reading, explaining, and then rendering the PDF. The current configuration consists of a console-based `PDF Inspector 0.1` and an Avalonia-based GUI Viewer.
 
 ## PDF Inspector 0.1
 
-- PDF 파일 경로를 실행 인자로 받는다.
-- 파일 존재 여부와 `.pdf` 확장자를 검사한다.
-- PdfPig로 문서를 열어 페이지 수를 읽는다.
-- 제목, 작성자, 생성 도구, 생성일, 수정일 등 메타데이터를 표시한다.
-- 페이지 번호, 페이지 크기, 회전값, 텍스트 길이, 앞 200자 텍스트 샘플을 표시한다.
-- 텍스트가 없는 페이지는 `Text extraction: none`으로 표시한다.
-- 분석 결과를 기본적으로 `<파일명>.analysis.json`으로 저장한다.
+- It accepts the PDF file path as an execution argument.
+- It checks for file existence and the `.pdf` extension.
+- It opens the document with PdfPig to read the number of pages.
+- It displays metadata such as title, author, creation tool, creation date, and modification date.
+- It displays page number, page size, rotation value, text length, and the first 200 characters of text sample.
+- Pages without text are marked as `Text extraction: none`.
+- Saves the analysis results by default to `<filename>.analysis.json`.
 
 ## GUI Viewer
 
-- `AnoPDF.Rendering`은 Docnet.Core의 PDFium native package를 사용해 PDF 페이지를 BGRA 픽셀 버퍼로 렌더링한다.
-- `AnoPDF.Viewer`는 파일 열기, 문서 검사, 전체 페이지 렌더링, 확대율 변경을 UI와 분리한 세션 모델로 제공한다.
-- `AnoPDF.Viewer`는 PDF 문서 모델과 분리된 `PdfAnnotationLayer` ink stroke 모델을 제공한다.
-- `AnoPDF.Desktop`은 Avalonia 앱이며, 초기 뷰에서 파일 다이얼로그로 PDF 경로를 받고 올바르게 열린 경우에만 PDF 표시 뷰로 전환한다.
-- 이후 뷰는 렌더링된 모든 페이지를 하단 방향으로 나열하고, 사용자가 스크롤로 문서 전체를 자유롭게 오가게 한다.
-- GUI는 밝은 작업 배경, 어두운 상단/하단 툴바, 고대비 primary 버튼을 사용해 버튼과 문서 영역의 시각 계층을 분명히 한다.
-- 창 하단에는 기본 드로잉 세트 툴바를 둔다. 현재 Pen은 마우스 드래그로 쓸 수 있고, 포토샵 색상환 모드와 같은 HSL 내부 삼각형 색상환과 stroke width 슬라이더 값을 새 stroke의 색상과 크기로 사용한다. Highlighter와 Eraser는 아직 준비 단계이다.
-- 렌더링된 각 PDF 페이지는 PDF 이미지 위에 같은 크기의 `PdfAnnotationLayerCanvas` 1장을 겹쳐 표시한다. 이 레이어는 PDF 픽셀 버퍼와 별도 계층으로 유지되며 stroke 입력만 담당한다.
+- `AnoPDF.Rendering` renders PDF pages to BGRA pixel buffers using the PDFium native package in Docnet.Core.
+- `AnoPDF.Viewer` provides a session model that separates file opening, document inspection, full page rendering, and zoom level changes from the UI.
+- `AnoPDF.Viewer` provides a PDF document model and a separate `PdfAnnotationLayer` ink stroke model.
+- `AnoPDF.Desktop` is an Avalonia app that receives the PDF path from the file dialog in the initial view and switches to the PDF view only if the file is opened correctly.
+- The subsequent view lists all rendered pages in the downward direction and allows users to freely navigate the entire document via scroll.
+- The GUI clarifies the visual hierarchy between buttons and the document area by using a light work background, dark top/bottom toolbars, and high-contrast primary buttons.
+- A default drawing set toolbar is placed at the bottom of the window. The current Pen can be used by mouse drag, and the HSL internal triangle color wheel, similar to the Photoshop color wheel mode, and stroke width slider values are used for the color and size of the new stroke. Highlighter and Eraser are still in preparation.
+- Each rendered PDF page displays the same-sized `PdfAnnotationLayerCanvas` 1 layer overlaid on top of the PDF image. This layer is kept as a separate hierarchy from the PDF pixel buffer and handles only stroke input.
 
-현재 GUI Viewer의 최소 기능은 다음과 같다.
+The minimum features of the current GUI Viewer are as follows.
 
-- Open File: 초기 뷰에서 PDF 파일을 선택하고 문서 정보를 읽는다.
-- Direct File Dialog: 초기 뷰의 선택 경로 아래 `Open` 버튼으로 파일 선택 창을 직접 연다.
-- Render Document: 문서 전체 페이지를 PDFium으로 다시 렌더링한다.
-- Zoom: 확대율을 바꾸고 문서 전체 페이지를 다시 렌더링한다.
-- Document Scroll: 전체 페이지를 세로로 쌓아 스크롤로 이동한다.
-- Drawing Toolbar: 창 하단에서 Pan/Pen 도구, HSL 내부 삼각형 색상환, 선 두께를 고른다.
-- Pen Tool: Pen 선택 후 PDF 페이지 위에서 마우스 왼쪽 버튼으로 드래그해 별도 주석 레이어에 stroke를 그린다.
+- Open File: Selects the PDF file in the initial view and reads the document information.
+- Direct File Dialog: Opens the file selection dialog directly with the `Open` button below the selected path in the initial view.
+- Render Document: Re-render the entire document page using PDFium.
+- Zoom: Change the zoom level and re-render the entire document page.
+- Document Scroll: Move by scrolling with the entire page stacked vertically.
+- Drawing Toolbar: Select the Pan/Pen tool, HSL internal color wheel, and line thickness from the bottom of the window.
+- Pen Tool: After selecting Pen, drag with the left mouse button on PDF to draw a stroke on a separate annotation layer.
 
-파일 선택기는 Avalonia 창에 연결된 `TopLevel.StorageProvider`에서 열고, 파일 열기를 지원하지 않는 실행 환경에서는 상태 표시줄에 오류를 표시한다.
+The file selector opens from `TopLevel.StorageProvider`, which is connected to the Avalonia window, and displays an error in the status bar in execution environments that do not support file opening.
 
-`Microsoft.WindowsDesktop.App`은 Windows 전용 런타임이라 macOS에서 실행할 수 없다. 따라서 GUI 프로젝트는 `net9.0` Avalonia 앱으로 구성해 macOS arm64에서도 데스크탑 실행이 가능하게 한다.
+`Microsoft.WindowsDesktop.App` is a dedicated runtime for Windows and cannot be run from macOS. Therefore, the GUI project is composed as a `net9.0` Avalonia app to enable desktop execution even on macOS arm64.
 
-## 제외 범위
+<a id="제외-범위"></a>
 
-- 텍스트 편집을 하지 않는다.
-- 주석 저장, 드래그 앤 드롭, 도형 그리기 기능을 만들지 않는다.
+## Excluded Scope
 
-## 콘솔 실행
+- Do not perform text editing.
+- Do not create features for saving annotations, drag and drop, and drawing shapes.
+
+<a id="콘솔-실행"></a>
+
+## Run Console
 
 ```bash
 dotnet run --project src/AnoPDF/AnoPDF.csproj -- sample.pdf
 ```
 
-JSON 출력 경로를 지정할 수 있다.
+You can specify the JSON output path.
 
 ```bash
 dotnet run --project src/AnoPDF/AnoPDF.csproj -- sample.pdf --json sample.analysis.json
 ```
 
-JSON 저장을 생략할 수도 있다.
+JSON  Saving can be omitted.
 
 ```bash
 dotnet run --project src/AnoPDF/AnoPDF.csproj -- sample.pdf --no-json
 ```
 
-## GUI 실행
+<a id="gui-실행"></a>
 
-다음 명령으로 GUI Viewer를 실행한다.
+## GUI  Run
+
+Run the next command with  GUI  Viewer.
 
 ```bash
 dotnet run --project src/AnoPDF.Desktop/AnoPDF.Desktop.csproj
 ```
 
-## 검증
+<a id="검증"></a>
 
-테스트는 임시 최소 PDF 파일을 생성해 입력 검증, 메타데이터, 페이지 크기, 텍스트 샘플 제한, 텍스트 없는 페이지, JSON 저장, 렌더링 지오메트리, PDFium 렌더링, 파일 열기 세션, 전체 페이지 렌더링, 주석 레이어 stroke 모델, 데스크탑 프로젝트 런타임 구성, 파일 선택기 연결 방식, 스크롤형 문서 뷰 구성, 하단 기본 드로잉 툴바, 고대비 GUI chrome, PDF 위 오버레이 레이어 구성을 확인한다.
+## Verification
+
+The test creates a temporary minimum of  PDF  files to verify input validation, metadata, page size, text sample limits, pages without text,  JSON  saving, rendering geometry, PDFium rendering, file open session, full page rendering, comment layer stroke model, desktop project runtime configuration, file selector connection method, scrollable document view configuration, bottom default drawing toolbar, high contrast  GUI  chrome,  PDF  top overlay layer configuration.
 
 ```bash
 dotnet test AnoPDF.sln
@@ -78,10 +86,7 @@ dotnet build src/AnoPDF.Desktop/AnoPDF.Desktop.csproj -c Release -o build
 dotnet build/PdfInspector.dll sample.pdf
 ```
 
-현재 PdfPig NuGet 패키지는 stable 버전이 없어 `UglyToad.PdfPig` `1.7.0-custom-5` prerelease 패키지를 사용한다.
-PDF 렌더링은 PDFium native를 포함하는 `Docnet.Core` `2.6.0`을 사용한다.
-GUI는 `Avalonia` `12.0.4`와 `Avalonia.Desktop` `12.0.4`를 사용한다.
-펜 입력과 주석 레이어는 Avalonia의 포인터 이벤트와 커스텀 control 렌더링으로 구현하며, 별도 외부 의존성을 추가하지 않는다.
+Currently,  PdfPig   NuGet  package has no stable version, so  `UglyToad.PdfPig`   `1.7.0-custom-5`  prerelease package is used.  PDF  Rendering uses  `Docnet.Core`   `2.6.0`  including PDFium native. GUI uses  `Avalonia`   `12.0.4`  and  `Avalonia.Desktop`   `12.0.4` . Pen input and comment layer are implemented using Avalonia's pointer events and custom control rendering, without adding separate external dependencies.
 
 ## Source layout
 
