@@ -93,3 +93,12 @@ Currently,  PdfPig   NuGet  package has no stable version, so  `UglyToad.PdfPig`
 Application and library projects live under `src/`; automated test projects live under `tests/`. Build configuration stays at the root, and all build output belongs under `build/`.
 
 Desktop configuration tests locate `AnoPDF.sln` from the test output directory, so repository-relative source checks also work with project-specific output folders under `build/`.
+
+<!-- workspace-docs:readme:start -->
+## Documentation entry points
+
+- Human overview: this English `README.md`.
+- Agent instructions: [AGENT.md](AGENT.md).
+- Human documentation: [documentation index](docs/README.md).
+- Structured agent documentation: [agent index](docs/agent-index.json).
+<!-- workspace-docs:readme:end -->

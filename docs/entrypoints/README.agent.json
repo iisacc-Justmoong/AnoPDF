@@ -1,0 +1,848 @@
+{
+  "format": "iisacc.agent-document",
+  "schema_version": 1,
+  "document_id": "urn:iisacc:document:07970a4084aab66e89405386d7f2f79fc22911653d0a4c01ffc6e066f1aadb29",
+  "project": {
+    "id": "urn:iisacc:project:Assets%2FProgram%2FAnoPDF%2FAnoPDF",
+    "name": "AnoPDF",
+    "root": "Assets/Program/AnoPDF/AnoPDF",
+    "kind": "design"
+  },
+  "source": {
+    "path": "README.md",
+    "sha256": "8a785f5ae14538252705965fa9ccf21bec62fbe8f74b650bdc1c83163d55a230",
+    "bytes": 5846,
+    "line_count": 104,
+    "encoding": "utf-8",
+    "language": "ko"
+  },
+  "document": {
+    "title": "AnoPDF",
+    "role": "overview",
+    "authority": "markdown_source"
+  },
+  "blocks": [
+    {
+      "id": "b000001",
+      "kind": "heading",
+      "start_line": 1,
+      "end_line": 1,
+      "raw": "# AnoPDF\n",
+      "level": 1,
+      "title": "AnoPDF"
+    },
+    {
+      "id": "b000002",
+      "kind": "blank",
+      "start_line": 2,
+      "end_line": 2,
+      "raw": "\n"
+    },
+    {
+      "id": "b000003",
+      "kind": "paragraph",
+      "start_line": 3,
+      "end_line": 3,
+      "raw": "AnoPDF is a step-by-step foundation for the editor that draws on top of PDF, first reading, explaining, and then rendering the PDF. The current configuration consists of a console-based `PDF Inspector 0.1` and an Avalonia-based GUI Viewer.\n"
+    },
+    {
+      "id": "b000004",
+      "kind": "blank",
+      "start_line": 4,
+      "end_line": 4,
+      "raw": "\n"
+    },
+    {
+      "id": "b000005",
+      "kind": "heading",
+      "start_line": 5,
+      "end_line": 5,
+      "raw": "## PDF Inspector 0.1\n",
+      "level": 2,
+      "title": "PDF Inspector 0.1"
+    },
+    {
+      "id": "b000006",
+      "kind": "blank",
+      "start_line": 6,
+      "end_line": 6,
+      "raw": "\n"
+    },
+    {
+      "id": "b000007",
+      "kind": "list",
+      "start_line": 7,
+      "end_line": 13,
+      "raw": "- It accepts the PDF file path as an execution argument.\n- It checks for file existence and the `.pdf` extension.\n- It opens the document with PdfPig to read the number of pages.\n- It displays metadata such as title, author, creation tool, creation date, and modification date.\n- It displays page number, page size, rotation value, text length, and the first 200 characters of text sample.\n- Pages without text are marked as `Text extraction: none`.\n- Saves the analysis results by default to `<filename>.analysis.json`.\n",
+      "items": [
+        {
+          "marker": "-",
+          "text": "It accepts the PDF file path as an execution argument.",
+          "checked": null
+        },
+        {
+          "marker": "-",
+          "text": "It checks for file existence and the `.pdf` extension.",
+          "checked": null
+        },
+        {
+          "marker": "-",
+          "text": "It opens the document with PdfPig to read the number of pages.",
+          "checked": null
+        },
+        {
+          "marker": "-",
+          "text": "It displays metadata such as title, author, creation tool, creation date, and modification date.",
+          "checked": null
+        },
+        {
+          "marker": "-",
+          "text": "It displays page number, page size, rotation value, text length, and the first 200 characters of text sample.",
+          "checked": null
+        },
+        {
+          "marker": "-",
+          "text": "Pages without text are marked as `Text extraction: none`.",
+          "checked": null
+        },
+        {
+          "marker": "-",
+          "text": "Saves the analysis results by default to `<filename>.analysis.json`.",
+          "checked": null
+        }
+      ]
+    },
+    {
+      "id": "b000008",
+      "kind": "blank",
+      "start_line": 14,
+      "end_line": 14,
+      "raw": "\n"
+    },
+    {
+      "id": "b000009",
+      "kind": "heading",
+      "start_line": 15,
+      "end_line": 15,
+      "raw": "## GUI Viewer\n",
+      "level": 2,
+      "title": "GUI Viewer"
+    },
+    {
+      "id": "b000010",
+      "kind": "blank",
+      "start_line": 16,
+      "end_line": 16,
+      "raw": "\n"
+    },
+    {
+      "id": "b000011",
+      "kind": "list",
+      "start_line": 17,
+      "end_line": 24,
+      "raw": "- `AnoPDF.Rendering` renders PDF pages to BGRA pixel buffers using the PDFium native package in Docnet.Core.\n- `AnoPDF.Viewer` provides a session model that separates file opening, document inspection, full page rendering, and zoom level changes from the UI.\n- `AnoPDF.Viewer` provides a PDF document model and a separate `PdfAnnotationLayer` ink stroke model.\n- `AnoPDF.Desktop` is an Avalonia app that receives the PDF path from the file dialog in the initial view and switches to the PDF view only if the file is opened correctly.\n- The subsequent view lists all rendered pages in the downward direction and allows users to freely navigate the entire document via scroll.\n- The GUI clarifies the visual hierarchy between buttons and the document area by using a light work background, dark top/bottom toolbars, and high-contrast primary buttons.\n- A default drawing set toolbar is placed at the bottom of the window. The current Pen can be used by mouse drag, and the HSL internal triangle color wheel, similar to the Photoshop color wheel mode, and stroke width slider values are used for the color and size of the new stroke. Highlighter and Eraser are still in preparation.\n- Each rendered PDF page displays the same-sized `PdfAnnotationLayerCanvas` 1 layer overlaid on top of the PDF image. This layer is kept as a separate hierarchy from the PDF pixel buffer and handles only stroke input.\n",
+      "items": [
+        {
+          "marker": "-",
+          "text": "`AnoPDF.Rendering` renders PDF pages to BGRA pixel buffers using the PDFium native package in Docnet.Core.",
+          "checked": null
+        },
+        {
+          "marker": "-",
+          "text": "`AnoPDF.Viewer` provides a session model that separates file opening, document inspection, full page rendering, and zoom level changes from the UI.",
+          "checked": null
+        },
+        {
+          "marker": "-",
+          "text": "`AnoPDF.Viewer` provides a PDF document model and a separate `PdfAnnotationLayer` ink stroke model.",
+          "checked": null
+        },
+        {
+          "marker": "-",
+          "text": "`AnoPDF.Desktop` is an Avalonia app that receives the PDF path from the file dialog in the initial view and switches to the PDF view only if the file is opened correctly.",
+          "checked": null
+        },
+        {
+          "marker": "-",
+          "text": "The subsequent view lists all rendered pages in the downward direction and allows users to freely navigate the entire document via scroll.",
+          "checked": null
+        },
+        {
+          "marker": "-",
+          "text": "The GUI clarifies the visual hierarchy between buttons and the document area by using a light work background, dark top/bottom toolbars, and high-contrast primary buttons.",
+          "checked": null
+        },
+        {
+          "marker": "-",
+          "text": "A default drawing set toolbar is placed at the bottom of the window. The current Pen can be used by mouse drag, and the HSL internal triangle color wheel, similar to the Photoshop color wheel mode, and stroke width slider values are used for the color and size of the new stroke. Highlighter and Eraser are still in preparation.",
+          "checked": null
+        },
+        {
+          "marker": "-",
+          "text": "Each rendered PDF page displays the same-sized `PdfAnnotationLayerCanvas` 1 layer overlaid on top of the PDF image. This layer is kept as a separate hierarchy from the PDF pixel buffer and handles only stroke input.",
+          "checked": null
+        }
+      ]
+    },
+    {
+      "id": "b000012",
+      "kind": "blank",
+      "start_line": 25,
+      "end_line": 25,
+      "raw": "\n"
+    },
+    {
+      "id": "b000013",
+      "kind": "paragraph",
+      "start_line": 26,
+      "end_line": 26,
+      "raw": "The minimum features of the current GUI Viewer are as follows.\n"
+    },
+    {
+      "id": "b000014",
+      "kind": "blank",
+      "start_line": 27,
+      "end_line": 27,
+      "raw": "\n"
+    },
+    {
+      "id": "b000015",
+      "kind": "list",
+      "start_line": 28,
+      "end_line": 34,
+      "raw": "- Open File: Selects the PDF file in the initial view and reads the document information.\n- Direct File Dialog: Opens the file selection dialog directly with the `Open` button below the selected path in the initial view.\n- Render Document: Re-render the entire document page using PDFium.\n- Zoom: Change the zoom level and re-render the entire document page.\n- Document Scroll: Move by scrolling with the entire page stacked vertically.\n- Drawing Toolbar: Select the Pan/Pen tool, HSL internal color wheel, and line thickness from the bottom of the window.\n- Pen Tool: After selecting Pen, drag with the left mouse button on PDF to draw a stroke on a separate annotation layer.\n",
+      "items": [
+        {
+          "marker": "-",
+          "text": "Open File: Selects the PDF file in the initial view and reads the document information.",
+          "checked": null
+        },
+        {
+          "marker": "-",
+          "text": "Direct File Dialog: Opens the file selection dialog directly with the `Open` button below the selected path in the initial view.",
+          "checked": null
+        },
+        {
+          "marker": "-",
+          "text": "Render Document: Re-render the entire document page using PDFium.",
+          "checked": null
+        },
+        {
+          "marker": "-",
+          "text": "Zoom: Change the zoom level and re-render the entire document page.",
+          "checked": null
+        },
+        {
+          "marker": "-",
+          "text": "Document Scroll: Move by scrolling with the entire page stacked vertically.",
+          "checked": null
+        },
+        {
+          "marker": "-",
+          "text": "Drawing Toolbar: Select the Pan/Pen tool, HSL internal color wheel, and line thickness from the bottom of the window.",
+          "checked": null
+        },
+        {
+          "marker": "-",
+          "text": "Pen Tool: After selecting Pen, drag with the left mouse button on PDF to draw a stroke on a separate annotation layer.",
+          "checked": null
+        }
+      ]
+    },
+    {
+      "id": "b000016",
+      "kind": "blank",
+      "start_line": 35,
+      "end_line": 35,
+      "raw": "\n"
+    },
+    {
+      "id": "b000017",
+      "kind": "paragraph",
+      "start_line": 36,
+      "end_line": 36,
+      "raw": "The file selector opens from `TopLevel.StorageProvider`, which is connected to the Avalonia window, and displays an error in the status bar in execution environments that do not support file opening.\n"
+    },
+    {
+      "id": "b000018",
+      "kind": "blank",
+      "start_line": 37,
+      "end_line": 37,
+      "raw": "\n"
+    },
+    {
+      "id": "b000019",
+      "kind": "paragraph",
+      "start_line": 38,
+      "end_line": 38,
+      "raw": "`Microsoft.WindowsDesktop.App` is a dedicated runtime for Windows and cannot be run from macOS. Therefore, the GUI project is composed as a `net9.0` Avalonia app to enable desktop execution even on macOS arm64.\n"
+    },
+    {
+      "id": "b000020",
+      "kind": "blank",
+      "start_line": 39,
+      "end_line": 39,
+      "raw": "\n"
+    },
+    {
+      "id": "b000021",
+      "kind": "html",
+      "start_line": 40,
+      "end_line": 40,
+      "raw": "<a id=\"제외-범위\"></a>\n"
+    },
+    {
+      "id": "b000022",
+      "kind": "blank",
+      "start_line": 41,
+      "end_line": 41,
+      "raw": "\n"
+    },
+    {
+      "id": "b000023",
+      "kind": "heading",
+      "start_line": 42,
+      "end_line": 42,
+      "raw": "## Excluded Scope\n",
+      "level": 2,
+      "title": "Excluded Scope"
+    },
+    {
+      "id": "b000024",
+      "kind": "blank",
+      "start_line": 43,
+      "end_line": 43,
+      "raw": "\n"
+    },
+    {
+      "id": "b000025",
+      "kind": "list",
+      "start_line": 44,
+      "end_line": 45,
+      "raw": "- Do not perform text editing.\n- Do not create features for saving annotations, drag and drop, and drawing shapes.\n",
+      "items": [
+        {
+          "marker": "-",
+          "text": "Do not perform text editing.",
+          "checked": null
+        },
+        {
+          "marker": "-",
+          "text": "Do not create features for saving annotations, drag and drop, and drawing shapes.",
+          "checked": null
+        }
+      ]
+    },
+    {
+      "id": "b000026",
+      "kind": "blank",
+      "start_line": 46,
+      "end_line": 46,
+      "raw": "\n"
+    },
+    {
+      "id": "b000027",
+      "kind": "html",
+      "start_line": 47,
+      "end_line": 47,
+      "raw": "<a id=\"콘솔-실행\"></a>\n"
+    },
+    {
+      "id": "b000028",
+      "kind": "blank",
+      "start_line": 48,
+      "end_line": 48,
+      "raw": "\n"
+    },
+    {
+      "id": "b000029",
+      "kind": "heading",
+      "start_line": 49,
+      "end_line": 49,
+      "raw": "## Run Console\n",
+      "level": 2,
+      "title": "Run Console"
+    },
+    {
+      "id": "b000030",
+      "kind": "blank",
+      "start_line": 50,
+      "end_line": 50,
+      "raw": "\n"
+    },
+    {
+      "id": "b000031",
+      "kind": "fenced_code",
+      "start_line": 51,
+      "end_line": 53,
+      "raw": "```bash\ndotnet run --project src/AnoPDF/AnoPDF.csproj -- sample.pdf\n```\n",
+      "language": "bash",
+      "code": "dotnet run --project src/AnoPDF/AnoPDF.csproj -- sample.pdf\n",
+      "closed": true
+    },
+    {
+      "id": "b000032",
+      "kind": "blank",
+      "start_line": 54,
+      "end_line": 54,
+      "raw": "\n"
+    },
+    {
+      "id": "b000033",
+      "kind": "paragraph",
+      "start_line": 55,
+      "end_line": 55,
+      "raw": "You can specify the JSON output path.\n"
+    },
+    {
+      "id": "b000034",
+      "kind": "blank",
+      "start_line": 56,
+      "end_line": 56,
+      "raw": "\n"
+    },
+    {
+      "id": "b000035",
+      "kind": "fenced_code",
+      "start_line": 57,
+      "end_line": 59,
+      "raw": "```bash\ndotnet run --project src/AnoPDF/AnoPDF.csproj -- sample.pdf --json sample.analysis.json\n```\n",
+      "language": "bash",
+      "code": "dotnet run --project src/AnoPDF/AnoPDF.csproj -- sample.pdf --json sample.analysis.json\n",
+      "closed": true
+    },
+    {
+      "id": "b000036",
+      "kind": "blank",
+      "start_line": 60,
+      "end_line": 60,
+      "raw": "\n"
+    },
+    {
+      "id": "b000037",
+      "kind": "paragraph",
+      "start_line": 61,
+      "end_line": 61,
+      "raw": "JSON  Saving can be omitted.\n"
+    },
+    {
+      "id": "b000038",
+      "kind": "blank",
+      "start_line": 62,
+      "end_line": 62,
+      "raw": "\n"
+    },
+    {
+      "id": "b000039",
+      "kind": "fenced_code",
+      "start_line": 63,
+      "end_line": 65,
+      "raw": "```bash\ndotnet run --project src/AnoPDF/AnoPDF.csproj -- sample.pdf --no-json\n```\n",
+      "language": "bash",
+      "code": "dotnet run --project src/AnoPDF/AnoPDF.csproj -- sample.pdf --no-json\n",
+      "closed": true
+    },
+    {
+      "id": "b000040",
+      "kind": "blank",
+      "start_line": 66,
+      "end_line": 66,
+      "raw": "\n"
+    },
+    {
+      "id": "b000041",
+      "kind": "html",
+      "start_line": 67,
+      "end_line": 67,
+      "raw": "<a id=\"gui-실행\"></a>\n"
+    },
+    {
+      "id": "b000042",
+      "kind": "blank",
+      "start_line": 68,
+      "end_line": 68,
+      "raw": "\n"
+    },
+    {
+      "id": "b000043",
+      "kind": "heading",
+      "start_line": 69,
+      "end_line": 69,
+      "raw": "## GUI  Run\n",
+      "level": 2,
+      "title": "GUI  Run"
+    },
+    {
+      "id": "b000044",
+      "kind": "blank",
+      "start_line": 70,
+      "end_line": 70,
+      "raw": "\n"
+    },
+    {
+      "id": "b000045",
+      "kind": "paragraph",
+      "start_line": 71,
+      "end_line": 71,
+      "raw": "Run the next command with  GUI  Viewer.\n"
+    },
+    {
+      "id": "b000046",
+      "kind": "blank",
+      "start_line": 72,
+      "end_line": 72,
+      "raw": "\n"
+    },
+    {
+      "id": "b000047",
+      "kind": "fenced_code",
+      "start_line": 73,
+      "end_line": 75,
+      "raw": "```bash\ndotnet run --project src/AnoPDF.Desktop/AnoPDF.Desktop.csproj\n```\n",
+      "language": "bash",
+      "code": "dotnet run --project src/AnoPDF.Desktop/AnoPDF.Desktop.csproj\n",
+      "closed": true
+    },
+    {
+      "id": "b000048",
+      "kind": "blank",
+      "start_line": 76,
+      "end_line": 76,
+      "raw": "\n"
+    },
+    {
+      "id": "b000049",
+      "kind": "html",
+      "start_line": 77,
+      "end_line": 77,
+      "raw": "<a id=\"검증\"></a>\n"
+    },
+    {
+      "id": "b000050",
+      "kind": "blank",
+      "start_line": 78,
+      "end_line": 78,
+      "raw": "\n"
+    },
+    {
+      "id": "b000051",
+      "kind": "heading",
+      "start_line": 79,
+      "end_line": 79,
+      "raw": "## Verification\n",
+      "level": 2,
+      "title": "Verification"
+    },
+    {
+      "id": "b000052",
+      "kind": "blank",
+      "start_line": 80,
+      "end_line": 80,
+      "raw": "\n"
+    },
+    {
+      "id": "b000053",
+      "kind": "paragraph",
+      "start_line": 81,
+      "end_line": 81,
+      "raw": "The test creates a temporary minimum of  PDF  files to verify input validation, metadata, page size, text sample limits, pages without text,  JSON  saving, rendering geometry, PDFium rendering, file open session, full page rendering, comment layer stroke model, desktop project runtime configuration, file selector connection method, scrollable document view configuration, bottom default drawing toolbar, high contrast  GUI  chrome,  PDF  top overlay layer configuration.\n"
+    },
+    {
+      "id": "b000054",
+      "kind": "blank",
+      "start_line": 82,
+      "end_line": 82,
+      "raw": "\n"
+    },
+    {
+      "id": "b000055",
+      "kind": "fenced_code",
+      "start_line": 83,
+      "end_line": 87,
+      "raw": "```bash\ndotnet test AnoPDF.sln\ndotnet build src/AnoPDF.Desktop/AnoPDF.Desktop.csproj -c Release -o build\ndotnet build/PdfInspector.dll sample.pdf\n```\n",
+      "language": "bash",
+      "code": "dotnet test AnoPDF.sln\ndotnet build src/AnoPDF.Desktop/AnoPDF.Desktop.csproj -c Release -o build\ndotnet build/PdfInspector.dll sample.pdf\n",
+      "closed": true
+    },
+    {
+      "id": "b000056",
+      "kind": "blank",
+      "start_line": 88,
+      "end_line": 88,
+      "raw": "\n"
+    },
+    {
+      "id": "b000057",
+      "kind": "paragraph",
+      "start_line": 89,
+      "end_line": 89,
+      "raw": "Currently,  PdfPig   NuGet  package has no stable version, so  `UglyToad.PdfPig`   `1.7.0-custom-5`  prerelease package is used.  PDF  Rendering uses  `Docnet.Core`   `2.6.0`  including PDFium native. GUI uses  `Avalonia`   `12.0.4`  and  `Avalonia.Desktop`   `12.0.4` . Pen input and comment layer are implemented using Avalonia's pointer events and custom control rendering, without adding separate external dependencies.\n"
+    },
+    {
+      "id": "b000058",
+      "kind": "blank",
+      "start_line": 90,
+      "end_line": 90,
+      "raw": "\n"
+    },
+    {
+      "id": "b000059",
+      "kind": "heading",
+      "start_line": 91,
+      "end_line": 91,
+      "raw": "## Source layout\n",
+      "level": 2,
+      "title": "Source layout"
+    },
+    {
+      "id": "b000060",
+      "kind": "blank",
+      "start_line": 92,
+      "end_line": 92,
+      "raw": "\n"
+    },
+    {
+      "id": "b000061",
+      "kind": "paragraph",
+      "start_line": 93,
+      "end_line": 93,
+      "raw": "Application and library projects live under `src/`; automated test projects live under `tests/`. Build configuration stays at the root, and all build output belongs under `build/`.\n"
+    },
+    {
+      "id": "b000062",
+      "kind": "blank",
+      "start_line": 94,
+      "end_line": 94,
+      "raw": "\n"
+    },
+    {
+      "id": "b000063",
+      "kind": "paragraph",
+      "start_line": 95,
+      "end_line": 95,
+      "raw": "Desktop configuration tests locate `AnoPDF.sln` from the test output directory, so repository-relative source checks also work with project-specific output folders under `build/`.\n"
+    },
+    {
+      "id": "b000064",
+      "kind": "blank",
+      "start_line": 96,
+      "end_line": 96,
+      "raw": "\n"
+    },
+    {
+      "id": "b000065",
+      "kind": "html",
+      "start_line": 97,
+      "end_line": 97,
+      "raw": "<!-- workspace-docs:readme:start -->\n"
+    },
+    {
+      "id": "b000066",
+      "kind": "heading",
+      "start_line": 98,
+      "end_line": 98,
+      "raw": "## Documentation entry points\n",
+      "level": 2,
+      "title": "Documentation entry points"
+    },
+    {
+      "id": "b000067",
+      "kind": "blank",
+      "start_line": 99,
+      "end_line": 99,
+      "raw": "\n"
+    },
+    {
+      "id": "b000068",
+      "kind": "list",
+      "start_line": 100,
+      "end_line": 103,
+      "raw": "- Human overview: this English `README.md`.\n- Agent instructions: [AGENT.md](AGENT.md).\n- Human documentation: [documentation index](docs/README.md).\n- Structured agent documentation: [agent index](docs/agent-index.json).\n",
+      "items": [
+        {
+          "marker": "-",
+          "text": "Human overview: this English `README.md`.",
+          "checked": null
+        },
+        {
+          "marker": "-",
+          "text": "Agent instructions: [AGENT.md](AGENT.md).",
+          "checked": null
+        },
+        {
+          "marker": "-",
+          "text": "Human documentation: [documentation index](docs/README.md).",
+          "checked": null
+        },
+        {
+          "marker": "-",
+          "text": "Structured agent documentation: [agent index](docs/agent-index.json).",
+          "checked": null
+        }
+      ]
+    },
+    {
+      "id": "b000069",
+      "kind": "html",
+      "start_line": 104,
+      "end_line": 104,
+      "raw": "<!-- workspace-docs:readme:end -->\n"
+    }
+  ],
+  "outline": [
+    {
+      "block_id": "b000001",
+      "parent_id": null,
+      "level": 1,
+      "title": "AnoPDF",
+      "anchor": "anopdf",
+      "start_line": 1
+    },
+    {
+      "block_id": "b000005",
+      "parent_id": "b000001",
+      "level": 2,
+      "title": "PDF Inspector 0.1",
+      "anchor": "pdf-inspector-01",
+      "start_line": 5
+    },
+    {
+      "block_id": "b000009",
+      "parent_id": "b000001",
+      "level": 2,
+      "title": "GUI Viewer",
+      "anchor": "gui-viewer",
+      "start_line": 15
+    },
+    {
+      "block_id": "b000023",
+      "parent_id": "b000001",
+      "level": 2,
+      "title": "Excluded Scope",
+      "anchor": "excluded-scope",
+      "start_line": 42
+    },
+    {
+      "block_id": "b000029",
+      "parent_id": "b000001",
+      "level": 2,
+      "title": "Run Console",
+      "anchor": "run-console",
+      "start_line": 49
+    },
+    {
+      "block_id": "b000043",
+      "parent_id": "b000001",
+      "level": 2,
+      "title": "GUI  Run",
+      "anchor": "gui--run",
+      "start_line": 69
+    },
+    {
+      "block_id": "b000051",
+      "parent_id": "b000001",
+      "level": 2,
+      "title": "Verification",
+      "anchor": "verification",
+      "start_line": 79
+    },
+    {
+      "block_id": "b000059",
+      "parent_id": "b000001",
+      "level": 2,
+      "title": "Source layout",
+      "anchor": "source-layout",
+      "start_line": 91
+    },
+    {
+      "block_id": "b000066",
+      "parent_id": "b000001",
+      "level": 2,
+      "title": "Documentation entry points",
+      "anchor": "documentation-entry-points",
+      "start_line": 98
+    }
+  ],
+  "indexes": {
+    "directive_candidates": [
+      {
+        "block_id": "b000017",
+        "line": 36,
+        "text": "The file selector opens from `TopLevel.StorageProvider`, which is connected to the Avalonia window, and displays an error in the status bar in execution environments that do not support file opening.",
+        "basis": "lexical_match",
+        "context": "paragraph"
+      },
+      {
+        "block_id": "b000025",
+        "line": 44,
+        "text": "- Do not perform text editing.",
+        "basis": "lexical_match",
+        "context": "list"
+      },
+      {
+        "block_id": "b000025",
+        "line": 45,
+        "text": "- Do not create features for saving annotations, drag and drop, and drawing shapes.",
+        "basis": "lexical_match",
+        "context": "list"
+      }
+    ],
+    "commands": [
+      {
+        "block_id": "b000031",
+        "language": "bash",
+        "code": "dotnet run --project src/AnoPDF/AnoPDF.csproj -- sample.pdf\n"
+      },
+      {
+        "block_id": "b000035",
+        "language": "bash",
+        "code": "dotnet run --project src/AnoPDF/AnoPDF.csproj -- sample.pdf --json sample.analysis.json\n"
+      },
+      {
+        "block_id": "b000039",
+        "language": "bash",
+        "code": "dotnet run --project src/AnoPDF/AnoPDF.csproj -- sample.pdf --no-json\n"
+      },
+      {
+        "block_id": "b000047",
+        "language": "bash",
+        "code": "dotnet run --project src/AnoPDF.Desktop/AnoPDF.Desktop.csproj\n"
+      },
+      {
+        "block_id": "b000055",
+        "language": "bash",
+        "code": "dotnet test AnoPDF.sln\ndotnet build src/AnoPDF.Desktop/AnoPDF.Desktop.csproj -c Release -o build\ndotnet build/PdfInspector.dll sample.pdf\n"
+      }
+    ],
+    "links": [
+      {
+        "block_id": "b000068",
+        "label": "AGENT.md",
+        "target": "AGENT.md",
+        "kind": "relative",
+        "line": 101
+      },
+      {
+        "block_id": "b000068",
+        "label": "documentation index",
+        "target": "docs/README.md",
+        "kind": "relative",
+        "line": 102
+      },
+      {
+        "block_id": "b000068",
+        "label": "agent index",
+        "target": "docs/agent-index.json",
+        "kind": "relative",
+        "line": 103
+      }
+    ],
+    "tables": []
+  },
+  "provenance": {
+    "generator": "workspace-docs",
+    "version": "1.0.0",
+    "profile": "lossless-blocks-v1",
+    "derived": true
+  }
+}

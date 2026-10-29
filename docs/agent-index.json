@@ -1,0 +1,55 @@
+{
+  "format": "iisacc.agent-document-index",
+  "schema_version": 1,
+  "project": {
+    "id": "urn:iisacc:project:Assets%2FProgram%2FAnoPDF%2FAnoPDF",
+    "name": "AnoPDF",
+    "root": "Assets/Program/AnoPDF/AnoPDF",
+    "kind": "design"
+  },
+  "documentation_root": "docs",
+  "agent_schema": "docs/agent-document.schema.json",
+  "documents": [
+    {
+      "document_id": "urn:iisacc:document:cb08e142b7487d8803627bc20dea6ad7546ddba9ce2bdf40473e8fd15fe1b4b3",
+      "source": "AGENT.md",
+      "agent_json": "docs/entrypoints/AGENT.agent.json",
+      "source_sha256": "468f800f43982fa379501becfbf093edeb184aa6827132830b4b585a42b3086f",
+      "role": "instructions"
+    },
+    {
+      "document_id": "urn:iisacc:document:07970a4084aab66e89405386d7f2f79fc22911653d0a4c01ffc6e066f1aadb29",
+      "source": "README.md",
+      "agent_json": "docs/entrypoints/README.agent.json",
+      "source_sha256": "8a785f5ae14538252705965fa9ccf21bec62fbe8f74b650bdc1c83163d55a230",
+      "role": "overview"
+    },
+    {
+      "document_id": "urn:iisacc:document:5cdfb4019f88e428118bfa4d5d16062ee180e0cfeca0e50d4ef08b3f9b44f923",
+      "source": "docs/README.md",
+      "agent_json": "docs/README.agent.json",
+      "source_sha256": "621b57dd691438acc9254290d89be92380916e66199cdb18f8cbf1a66b2f66bd",
+      "role": "overview"
+    },
+    {
+      "document_id": "urn:iisacc:document:fb14b6b29b4998ae059c9d00b9efb1c45d62f48fc8249d1ef4490b1ed59c3bda",
+      "source": "docs/documentation-structure.md",
+      "agent_json": "docs/documentation-structure.agent.json",
+      "source_sha256": "f1a44349c2d78aa46e2d07c6245b441918e6f04bf8f021312dde1cd698c9aa3d",
+      "role": "guide"
+    }
+  ],
+  "layout": {
+    "human_entry": "README.md",
+    "agent_entry": "AGENT.md",
+    "human_format": "markdown",
+    "agent_format": "structured_json",
+    "source_authority": "markdown"
+  },
+  "provenance": {
+    "generator": "workspace-docs",
+    "version": "1.0.0",
+    "profile": "lossless-blocks-v1",
+    "derived": true
+  }
+}
